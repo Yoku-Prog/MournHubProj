@@ -39,24 +39,37 @@ app.use(
 // Routes
 app.use("/", authRoutes);
 
-app.get("/", (req, res) => {
-  res.redirect(req.session.userId ? "/dashboard" : "/login");
+const memorialRoutes = require("./routes/memorialRoutes");
+app.use("/", memorialRoutes);
+
+app.get('/', (req, res) => {
+  if (req.session.userId) {
+    return res.redirect('/dashboard');
+  }
+  res.render('landing');
 });
 
-app.get("/dashboard", requireAuth, (req, res) => {
-  res.render("dashboard", { userName: req.session.userName });
-});
-
+const publicRoutes = require("./routes/publicRoutes");
+app.use("/", publicRoutes);
 // Connect to MongoDB and start server
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 8000,
+    family: 4,
+    tls: true,
+    tlsAllowInvalidCertificates: false,
+    minPoolSize: 0,
+  })
   .then(() => {
     console.log("MongoDB connected");
     app.listen(process.env.PORT || 3000, () => {
       console.log(`Server running on port ${process.env.PORT || 3000}`);
     });
   })
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1);
+  });
 mongoose.connection.on("error", (err) => {
   console.error("MongoDB connection error (non-fatal):", err.message);
 });

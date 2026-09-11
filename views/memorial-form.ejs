@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= memorial ? 'Edit' : 'Create' %> Memorial - MournHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page-form">
+  <h2><%= memorial ? 'Edit Memorial' : 'Create New Memorial' %></h2>
+
+  <% if (error) { %>
+    <p style="color:red;"><%= error %></p>
+  <% } %>
+    
+  <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>">
+    <label>Full Name:</label><br>
+    <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required><br><br>
+
+    <label>Birth Date:</label><br>
+    <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>"><br><br>
+
+    <label>Death Date:</label><br>
+    <input type="date" name="deathDate" value="<%= memorial && memorial.deathDate ? memorial.deathDate.toISOString().split('T')[0] : '' %>"><br><br>
+
+    <label>Life Story:</label><br>
+    <textarea name="lifeStory" rows="10" cols="50" required><%= memorial ? memorial.lifeStory : '' %></textarea><br><br>
+
+    <button type="submit"><%= memorial ? 'Save Changes' : 'Create Memorial' %></button>
+  </form>
+  </div>
+  <br>
+  <a class="back-to-dashboard"href="/dashboard">← Back to Dashboard</a>
+</body>
+</html>

@@ -1,8 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head><title>Dashboard - MournHub</title></head>
+<head>
+  <title>Dashboard - MournHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
 <body>
   <h2>Welcome, <%= userName %></h2>
   <a href="/logout">Logout</a>
+  <hr>
+
+  <h3>Your Memorials</h3>
+  <a href="/memorials/new">+ Create New Memorial</a>
+
+  <% if (memorials.length === 0) { %>
+    <p>You haven't created any memorials yet.</p>
+  <% } else { %>
+    <ul>
+      <% memorials.forEach(memorial => { %>
+        <li class="memorial-card" style="list-style: none;">
+          <strong><%= memorial.fullName %></strong>
+          — Status: <%= memorial.isPublic ? 'Public' : 'Private (Draft)' %>
+          <br>
+          <a href="/memorials/<%= memorial._id %>/edit">Edit</a> |
+
+          <form action="/memorials/<%= memorial._id %>/toggle-publish" method="POST" style="display:inline;">
+            <button type="submit"><%= memorial.isPublic ? 'Unpublish' : 'Publish' %></button>
+          </form>
+
+          <form action="/memorials/<%= memorial._id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this memorial permanently?');">
+            <button type="submit">Delete</button>
+          </form>
+
+          <% if (memorial.isPublic) { %>
+            <br>
+            Public link: <a href="<%= memorial.publicUrl %>" target="_blank"><%= memorial.publicUrl %></a>
+            <br>
+            <img src="<%= memorial.qrCode %>" alt="QR Code" width="150">
+            <br>
+            <a href="<%= memorial.qrCode %>" download="<%= memorial.slug %>-qrcode.png">Download QR Code</a>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
 </body>
 </html>

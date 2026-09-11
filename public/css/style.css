@@ -1,0 +1,528 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Georgia", "Times New Roman", serif;
+  background-color: #f6f3ec;
+  color: #2e3b34;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Layout containers */
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  border: 1px solid #dce3d6;
+}
+
+.wide-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* Headings */
+h1,
+h2,
+h3 {
+  color: #2e3b34;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 28px;
+}
+h2 {
+  font-size: 22px;
+}
+h3 {
+  font-size: 18px;
+}
+
+/* Forms */
+label {
+  display: block;
+  font-size: 13px;
+  color: #5c6b60;
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dce3d6;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #2e3b34;
+  background: #f6f3ec;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3e5c4c;
+  background: #ffffff;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+/* Buttons */
+button,
+.btn {
+  display: inline-block;
+  background: #3e5c4c;
+  color: #f6f3ec;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: 20px;
+}
+
+button:hover,
+.btn:hover {
+  background: #2e3b34;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #5c6b60;
+  border: 1px solid #dce3d6;
+}
+
+.btn-secondary:hover {
+  background: #f0eee6;
+  color: #2e3b34;
+}
+
+.btn-danger {
+  background: transparent;
+  color: #a85c4a;
+  border: 1px solid #e0c4b8;
+}
+
+.btn-danger:hover {
+  background: #fbf0ec;
+}
+
+/* Links */
+a {
+  color: #3e5c4c;
+}
+
+a:hover {
+  color: #2e3b34;
+}
+
+/* Error messages */
+.error {
+  background: #fbf0ec;
+  color: #a85c4a;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  border: 1px solid #e0c4b8;
+}
+
+/* Memorial list on dashboard */
+.memorial-card {
+  background: #ffffff;
+  border: 1px solid #dce3d6;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.memorial-card h3 {
+  margin-bottom: 4px;
+}
+
+.status-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.status-public {
+  background: #dce3d6;
+  color: #3e5c4c;
+}
+
+.status-private {
+  background: #f0eee6;
+  color: #5c6b60;
+}
+
+.memorial-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.memorial-actions form {
+  display: inline;
+}
+
+.qr-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0eee6;
+}
+
+.qr-section img {
+  border-radius: 8px;
+  border: 1px solid #dce3d6;
+}
+
+/* Public memorial page */
+.public-memorial {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.public-memorial .dates {
+  color: #5c6b60;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.public-memorial .life-story {
+  text-align: left;
+  max-width: 600px;
+  margin: 0 auto;
+  white-space: pre-wrap;
+  color: #2e3b34;
+}
+
+.public-memorial hr {
+  border: none;
+  border-top: 1px solid #dce3d6;
+  width: 60px;
+  margin: 24px auto;
+}
+
+/* Header bar for logged-in pages */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto 24px;
+  padding: 0 20px;
+}
+
+.top-bar .logout-link {
+  font-size: 14px;
+  color: #5c6b60;
+}
+
+.page-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+}
+
+.page-form h2 {
+  font-family: "Lora", serif;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.page-form form {
+  background: #fff;
+  width: 100%;
+  max-width: 520px;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.page-form label {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.page-form input[type="text"],
+.page-form input[type="date"],
+.page-form textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.page-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.page-form button,
+.page-form input[type="submit"] {
+  margin-top: 1.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page-form button:hover,
+.page-form input[type="submit"]:hover {
+  background: #1d4ed8;
+}
+.back-to-dashboard {
+  font-size: 1.3rem;
+  border: solid 1px black;
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+.memorial-public {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1rem;
+  min-height: 100vh;
+  background: #f4f5f7;
+}
+
+.memorial-public h1 {
+  font-family: 'Lora', serif;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+  font-size: 2.2rem;
+  text-align: center;
+}
+
+.memorial-public .memorial-dates {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.memorial-public .memorial-divider {
+  width: 100%;
+  max-width: 600px;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+}
+
+.memorial-public .memorial-story {
+  background: #fff;
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  line-height: 1.8;
+  color: #374151;
+  font-family: 'Inter', sans-serif;
+  white-space: pre-wrap;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Fade + rise on load */
+@keyframes fadeRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeRiseIn 0.4s ease forwards;
+}
+
+/* Hover lift on cards */
+.memorial-card {
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.memorial-card:hover {
+  transform: translateY(-3px);
+  border-color: #3e5c4c;
+}
+
+/* Button press feedback */
+button,
+.btn {
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+button:active,
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Input focus transition */
+input,
+textarea {
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+/* Staggered fade-in for memorial list */
+.memorial-card {
+  opacity: 0;
+  animation: fadeRiseIn 0.4s ease forwards;
+}
+
+.memorial-card:nth-child(1) {
+  animation-delay: 0s;
+}
+.memorial-card:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.memorial-card:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.memorial-card:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.memorial-card:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.memorial-card:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+/* Responsive base */
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 32px 28px;
+}
+
+.wide-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    margin: 16px auto;
+    padding: 24px 20px;
+    border-radius: 8px;
+  }
+
+  .wide-container {
+    padding: 0 12px;
+    margin: 16px auto;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  h3 {
+    font-size: 16px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .memorial-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .memorial-actions form,
+  .memorial-actions a,
+  .memorial-actions button {
+    width: 100%;
+  }
+
+  button,
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .qr-section img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+
+  .public-memorial {
+    padding: 24px 16px;
+  }
+
+  .public-memorial .life-story {
+    max-width: 100%;
+  }
+
+  input,
+  textarea {
+    font-size: 16px; /* prevents auto-zoom on iOS when focusing inputs */
+  }
+}
