@@ -11,73 +11,362 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <div class="wide-container">
-      <div class="hero" style="margin-top: 60px">
-        <div class="eyebrow">MournHub</div>
-        <h1>A lasting tribute, one scan away</h1>
-        <p
-          style="
-            max-width: 480px;
-            margin: 16px auto 0;
-            color: #5c6b60;
-            font-size: 16px;
-          "
+    <div class="scroll-progress-bar" id="scrollProgress"></div>
+
+    <nav class="landing-nav" id="landingNav">
+      <div class="landing-nav-brand">MournHub</div>
+
+      <button class="landing-nav-toggle" id="navToggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="landing-nav-links" id="navLinks">
+        <a href="#how-it-works">How it works</a>
+        <a href="#preview">Preview</a>
+        <a href="#why">Why MournHub</a>
+        <a href="mailto:youremail@example.com">Contact</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="landing-section landing-hero reveal">
+      <div class="landing-hero-art">
+        <svg
+          viewBox="0 0 200 140"
+          width="180"
+          height="126"
+          role="img"
+          aria-label="A leaf resting beside a soft glowing candle"
         >
-          Create a lasting online memorial for a loved one, and let visitors
-          reach it with a simple QR code — right at the place they're laid to
-          rest.
-        </p>
+          <ellipse
+            cx="100"
+            cy="128"
+            rx="70"
+            ry="6"
+            fill="#DCE3D6"
+            opacity="0.5"
+          />
+          <path
+            d="M60 128 L60 70 Q60 55 75 50 Q65 65 68 80 Q70 100 60 128 Z"
+            fill="#3E5C4C"
+          />
+          <path
+            d="M60 70 Q60 55 75 50"
+            fill="none"
+            stroke="#2E3B34"
+            stroke-width="1"
+          />
+          <ellipse cx="130" cy="115" rx="16" ry="8" fill="#EFE1C8" />
+          <rect
+            x="120"
+            y="70"
+            width="20"
+            height="45"
+            rx="4"
+            fill="#FBF8F3"
+            stroke="#DCE3D6"
+            stroke-width="1"
+          />
+          <ellipse cx="130" cy="70" rx="10" ry="4" fill="#F6F3EC" />
+          <path d="M130 62 Q126 52 130 44 Q134 52 130 62 Z" fill="#F0985C" />
+          <path d="M130 58 Q128 52 130 47 Q132 52 130 58 Z" fill="#FAD7A0" />
+        </svg>
       </div>
-
-      <div style="text-align: center; margin-bottom: 60px">
-        <a href="/register" class="btn">Create a Memorial</a>
-        <a href="/login" class="btn btn-secondary" style="margin-left: 12px"
-          >Admin Login</a
-        >
-      </div>
-
-      <div
-        style="
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-          gap: 24px;
-          margin-bottom: 60px;
-        "
-      >
-        <div class="memorial-card" style="text-align: center">
-          <h3>Write their story</h3>
-          <p style="color: #5c6b60; font-size: 14px">
-            Share their life, in your own words, kept safe and private until
-            you're ready.
-          </p>
-        </div>
-
-        <div class="memorial-card" style="text-align: center">
-          <h3>Publish when ready</h3>
-          <p style="color: #5c6b60; font-size: 14px">
-            You control when the memorial goes public — no rush, no pressure.
-          </p>
-        </div>
-
-        <div class="memorial-card" style="text-align: center">
-          <h3>Scan to remember</h3>
-          <p style="color: #5c6b60; font-size: 14px">
-            Get a QR code linking straight to the tribute — place it at the
-            gravesite.
-          </p>
-        </div>
-      </div>
-
-      <p
-        style="
-          text-align: center;
-          color: #a9b8ac;
-          font-size: 13px;
-          margin-bottom: 40px;
-        "
-      >
-        No login required for visitors — anyone can view a published memorial.
+      <div class="eyebrow">MournHub</div>
+      <h1>A lasting tribute,<br />one scan away</h1>
+      <p class="landing-subtext">
+        Create a lasting online memorial for a loved one, and let visitors reach
+        it with a simple QR code — right at the place they're laid to rest.
       </p>
-    </div>
+      <div class="landing-cta">
+        <a href="mailto:youremail@example.com" class="btn">Get in touch</a>
+        <a href="/register" class="btn btn-secondary">Request Admin Access</a>
+      </div>
+    </section>
+
+    <div class="divider"><span>🌿</span></div>
+
+    <!-- How it works -->
+    <section class="landing-section reveal" id="how-it-works">
+      <div class="landing-section-header">
+        <div class="eyebrow">How it works</div>
+        <h2>From story to tribute, in three steps</h2>
+      </div>
+
+      <div class="landing-steps">
+        <div class="landing-step">
+          <div class="landing-step-number">01</div>
+          <h3>Write their story</h3>
+          <p>
+            Share their life, in your own words, kept safe and private until
+            you're ready to publish.
+          </p>
+        </div>
+
+        <div class="landing-step">
+          <div class="landing-step-number">02</div>
+          <h3>Publish when ready</h3>
+          <p>
+            You control when the memorial goes public — no rush, no pressure, no
+            automation deciding for you.
+          </p>
+        </div>
+
+        <div class="landing-step">
+          <div class="landing-step-number">03</div>
+          <h3>Scan to remember</h3>
+          <p>
+            Get a unique QR code linking straight to the tribute — place it at
+            the gravesite for visitors to find.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"><span>🌿</span></div>
+
+    <!-- Preview mockup -->
+    <section class="landing-section reveal" id="preview">
+      <div class="landing-section-header">
+        <div class="eyebrow">A quiet, dignified page</div>
+        <h2>What visitors see</h2>
+      </div>
+
+      <div class="landing-preview">
+        <div class="landing-preview-frame">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 28 28"
+            style="margin-bottom: 10px"
+          >
+            <path
+              d="M14 24 L14 12 Q14 6 20 5 Q16 10 17 16 Q18 20 14 24 Z"
+              fill="#3E5C4C"
+            />
+          </svg>
+          <div class="memorial-eyebrow">In loving memory of</div>
+          <h3 style="font-size: 24px; margin-bottom: 4px">Juan Dela Cruz</h3>
+          <p
+            style="
+              color: #7c8b7f;
+              font-size: 13px;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
+            1958 &mdash; 2024
+          </p>
+          <hr class="memorial-divider" style="margin-bottom: 16px" />
+          <p style="color: #5c6b60; font-size: 14px; text-align: left">
+            He loved quiet mornings, his garden, and the sound of rain on the
+            roof. A devoted father and friend to many...
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"><span>🌿</span></div>
+
+    <!-- Why MournHub -->
+    <section class="landing-section reveal" id="why">
+      <div class="landing-section-header">
+        <div class="eyebrow">Why MournHub</div>
+        <h2>Built for remembering, not scrolling</h2>
+      </div>
+      <div class="landing-features">
+        <div class="landing-feature">
+          <svg
+            class="landing-feature-icon"
+            viewBox="0 0 48 48"
+            width="36"
+            height="36"
+          >
+            <rect
+              x="10"
+              y="20"
+              width="28"
+              height="20"
+              rx="4"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+            <path
+              d="M16 20 V14 Q16 6 24 6 Q32 6 32 14 V20"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+            <circle cx="24" cy="30" r="3" fill="#3E5C4C" />
+          </svg>
+          <h3>No login for visitors</h3>
+          <p>
+            Anyone can view a published memorial instantly — no account, no app,
+            just a scan.
+          </p>
+        </div>
+        <div class="landing-feature">
+          <svg
+            class="landing-feature-icon"
+            viewBox="0 0 48 48"
+            width="36"
+            height="36"
+          >
+            <rect
+              x="8"
+              y="10"
+              width="32"
+              height="24"
+              rx="4"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+            <path
+              d="M8 16 L24 26 L40 16"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <h3>You stay in control</h3>
+          <p>
+            Only approved admins can create or edit a memorial. Content stays
+            private until published.
+          </p>
+        </div>
+        <div class="landing-feature">
+          <svg
+            class="landing-feature-icon"
+            viewBox="0 0 48 48"
+            width="36"
+            height="36"
+          >
+            <rect
+              x="8"
+              y="8"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+            <rect
+              x="26"
+              y="8"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+            <rect
+              x="8"
+              y="26"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+            <rect x="12" y="12" width="6" height="6" fill="#3E5C4C" />
+            <rect x="30" y="12" width="6" height="6" fill="#3E5C4C" />
+            <rect x="12" y="30" width="6" height="6" fill="#3E5C4C" />
+            <rect
+              x="30"
+              y="30"
+              width="6"
+              height="6"
+              fill="none"
+              stroke="#3E5C4C"
+              stroke-width="2"
+            />
+          </svg>
+          <h3>A permanent link</h3>
+          <p>
+            One QR code, one lasting page — a quiet place to return to, whenever
+            you need to.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="landing-footer">
+      <p>MournHub &mdash; a space to remember.</p>
+    </footer>
+
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+      ↑
+    </button>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const revealEls = document.querySelectorAll(".reveal");
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15 },
+        );
+
+        revealEls.forEach((el) => observer.observe(el));
+
+        // Sticky header shadow on scroll
+        const nav = document.getElementById("landingNav");
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 10) {
+            nav.classList.add("scrolled");
+          } else {
+            nav.classList.remove("scrolled");
+          }
+        });
+
+        // Scroll progress bar
+        const progressBar = document.getElementById("scrollProgress");
+        window.addEventListener("scroll", () => {
+          const scrollTop = window.scrollY;
+          const docHeight =
+            document.documentElement.scrollHeight - window.innerHeight;
+          const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+          progressBar.style.width = percent + "%";
+        });
+
+        // Mobile menu toggle
+        const navToggle = document.getElementById("navToggle");
+        const navLinks = document.getElementById("navLinks");
+        navToggle.addEventListener("click", () => {
+          navLinks.classList.toggle("is-open");
+          navToggle.classList.toggle("is-active");
+        });
+
+        navLinks.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            navLinks.classList.remove("is-open");
+            navToggle.classList.remove("is-active");
+          });
+        });
+
+        // Back to top button
+        const backToTop = document.getElementById("backToTop");
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 400) {
+            backToTop.classList.add("is-visible");
+          } else {
+            backToTop.classList.remove("is-visible");
+          }
+        });
+        backToTop.addEventListener("click", () => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+    </script>
   </body>
 </html>

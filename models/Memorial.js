@@ -34,6 +34,10 @@ const memorialSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+    photoUrl: {
+    type: String,
+    default: null
+  },
 });
 
 module.exports = mongoose.model("Memorial", memorialSchema);

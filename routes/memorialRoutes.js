@@ -6,12 +6,17 @@ const { requireAuth } = require("../middleware/authMiddleware");
 router.get("/dashboard", requireAuth, memorialController.listMemorials);
 
 router.get("/memorials/new", requireAuth, memorialController.getCreateForm);
-router.post("/memorials/new", requireAuth, memorialController.createMemorial);
-
+router.post(
+  "/memorials/new",
+  requireAuth,
+  memorialController.uploadPhoto,
+  memorialController.createMemorial,
+);
 router.get("/memorials/:id/edit", requireAuth, memorialController.getEditForm);
 router.post(
   "/memorials/:id/edit",
   requireAuth,
+  memorialController.uploadPhoto,
   memorialController.updateMemorial,
 );
 

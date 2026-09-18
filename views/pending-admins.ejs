@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pending Admins - MournHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="top-bar">
+    <h2>Pending Admin Approvals</h2>
+    <a href="/dashboard" class="logout-link">← Back to Dashboard</a>
+  </div>
+
+  <div class="wide-container">
+    <% if (pendingAdmins.length === 0) { %>
+      <p>No pending admin accounts right now.</p>
+    <% } else { %>
+      <% pendingAdmins.forEach(admin => { %>
+        <div class="memorial-card">
+          <strong><%= admin.name %></strong><br>
+          <span style="color:#7C8B7F; font-size: 14px;"><%= admin.email %></span>
+          <div class="memorial-actions">
+            <form action="/admins/<%= admin._id %>/approve" method="POST">
+              <button type="submit">Approve</button>
+            </form>
+            <form action="/admins/<%= admin._id %>/reject" method="POST" onsubmit="return confirm('Reject and delete this account request?');">
+              <button type="submit" class="btn-danger">Reject</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</body>
+</html>

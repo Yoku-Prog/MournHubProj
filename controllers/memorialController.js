@@ -1,7 +1,44 @@
 const Memorial = require("../models/Memorial");
 const crypto = require("crypto");
 const QRCode = require("qrcode");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+console.log("Cloudinary config check:", cloudinary.config().cloud_name);
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only JPG, PNG, or WEBP images are allowed."));
+    }
+  },
+});
+
+exports.uploadPhoto = upload.single("photo");
+
+// Helper: upload a buffer to Cloudinary and return the resulting URL
+function uploadToCloudinary(buffer) {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "mournhub" },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result.secure_url);
+      },
+    );
+    stream.end(buffer);
+  });
+}
 // Helper: generate a unique, URL-safe slug from the person's name
 function generateSlug(fullName) {
   const base = fullName
@@ -37,6 +74,7 @@ exports.listMemorials = async (req, res) => {
     res.render("dashboard", {
       userName: req.session.userName,
       memorials: memorialsWithQR,
+      userRole: req.session.userRole,
     });
   } catch (err) {
     console.error(err);
@@ -63,12 +101,18 @@ exports.createMemorial = async (req, res) => {
 
     const slug = generateSlug(fullName);
 
+    let photoUrl = null;
+    if (req.file) {
+      photoUrl = await uploadToCloudinary(req.file.buffer);
+    }
+
     const newMemorial = new Memorial({
       fullName,
       birthDate: birthDate || null,
       deathDate: deathDate || null,
       lifeStory,
       slug,
+      photoUrl,
       createdBy: req.session.userId,
     });
 
@@ -117,6 +161,10 @@ exports.updateMemorial = async (req, res) => {
     memorial.birthDate = birthDate || null;
     memorial.deathDate = deathDate || null;
     memorial.lifeStory = lifeStory;
+
+    if (req.file) {
+      memorial.photoUrl = await uploadToCloudinary(req.file.buffer);
+    }
 
     await memorial.save();
     res.redirect("/dashboard");

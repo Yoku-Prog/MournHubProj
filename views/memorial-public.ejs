@@ -2,30 +2,36 @@
 <html>
 <head>
   <title><%= memorial.fullName %> - MournHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="memorial-public">
+
+    <% if (memorial.photoUrl) { %>
+      <div class="memorial-photo-wrap fade-in">
+        <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo">
+      </div>
+    <% } %>
+
+    <div class="memorial-eyebrow">In loving memory of</div>
     <h1 class="fade-in"><%= memorial.fullName %></h1>
 
     <% if (memorial.birthDate || memorial.deathDate) { %>
       <p class="memorial-dates">
-        <% if (memorial.birthDate) { %>
-          <%= memorial.birthDate.toDateString() %>
-        <% } %>
-        —
-        <% if (memorial.deathDate) { %>
-          <%= memorial.deathDate.toDateString() %>
-        <% } %>
+        <% if (memorial.birthDate) { %><%= memorial.birthDate.toDateString() %><% } %>
+        &mdash;
+        <% if (memorial.deathDate) { %><%= memorial.deathDate.toDateString() %><% } %>
       </p>
     <% } %>
 
     <hr class="memorial-divider">
 
     <p class="memorial-story"><%= memorial.lifeStory %></p>
+
+    <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
   </div>
 </body>
 </html>

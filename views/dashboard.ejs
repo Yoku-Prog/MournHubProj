@@ -11,7 +11,9 @@
   <h2>Welcome, <%= userName %></h2>
   <a href="/logout">Logout</a>
   <hr>
-
+  <% if (userRole === 'superadmin') { %>
+    <a href="/admins/pending">Manage Pending Admins</a>
+  <% } %>
   <h3>Your Memorials</h3>
   <a href="/memorials/new">+ Create New Memorial</a>
 

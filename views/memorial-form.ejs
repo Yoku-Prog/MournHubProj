@@ -15,9 +15,18 @@
     <p style="color:red;"><%= error %></p>
   <% } %>
     
-  <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>">
+  <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
     <label>Full Name:</label><br>
     <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required><br><br>
+
+    <label>Photo (optional):</label><br>
+    <% if (memorial && memorial.photoUrl) { %>
+      <div style="margin-bottom: 10px;">
+        <img src="<%= memorial.photoUrl %>" alt="Current photo" style="max-width: 150px; border-radius: 10px; border: 1px solid #DCE3D6;">
+        <p style="font-size: 12px; color: #7C8B7F; margin-top: 4px;">Current photo — upload a new one to replace it</p>
+      </div>
+    <% } %>
+    <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><br><br>
 
     <label>Birth Date:</label><br>
     <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>"><br><br>
@@ -32,6 +41,6 @@
   </form>
   </div>
   <br>
-  <a class="back-to-dashboard"href="/dashboard">← Back to Dashboard</a>
+  <a class="back-to-dashboard" href="/dashboard">← Back to Dashboard</a>
 </body>
 </html>
