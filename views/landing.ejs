@@ -79,8 +79,30 @@
         it with a simple QR code — right at the place they're laid to rest.
       </p>
       <div class="landing-cta">
-        <a href="mailto:youremail@example.com" class="btn">Get in touch</a>
-        <a href="/register" class="btn btn-secondary">Request Admin Access</a>
+        <a href="mailto:youremail@example.com" class="cir-btn">
+          Get in touch
+          <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M4 12L12 4M12 4H5M12 4V11"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+        <a href="/register" class="cir-btn cir-btn--secondary">
+          Request Admin Access
+          <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M4 12L12 4M12 4H5M12 4V11"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
       </div>
     </section>
 
@@ -314,7 +336,7 @@
               }
             });
           },
-          { threshold: 0.15 },
+          { threshold: 0.1, rootMargin: "0px 0px -100px 0px" },
         );
 
         revealEls.forEach((el) => observer.observe(el));

@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+
+  <div id="candleGlowOverlay" class="candle-glow-overlay"></div>
+
   <div class="memorial-public">
 
     <% if (memorial.photoUrl) { %>
@@ -29,9 +32,68 @@
 
     <hr class="memorial-divider">
 
+    <div class="candle-section">
+      <button id="candleBtn" class="candle-btn">
+        <svg class="candle-icon" viewBox="0 0 24 30" width="30" height="38">
+          <rect x="8" y="16" width="8" height="12" rx="2" fill="#FBF8F3" stroke="#DCE3D6" stroke-width="1"/>
+          <ellipse cx="12" cy="16" rx="4" ry="1.5" fill="#F6F3EC" stroke="#DCE3D6" stroke-width="0.8"/>
+          <line x1="12" y1="16" x2="12" y2="10" stroke="#5C4A3A" stroke-width="1.5" stroke-linecap="round"/>
+          <g class="flame-group">
+            <path class="flame-outer" d="M12 10 Q7 4 12 -3 Q17 4 12 10 Z" fill="#F0985C"/>
+            <path class="flame-inner" d="M12 8.5 Q9.5 4.5 12 0 Q14.5 4.5 12 8.5 Z" fill="#FAD7A0"/>
+          </g>
+        </svg>
+        <span id="candleLabel">Light a candle</span>
+      </button>
+      <p class="candle-count"><span id="candleCount"><%= memorial.candleCount || 0 %></span> candle<span id="candlePlural"><%= (memorial.candleCount === 1) ? '' : 's' %></span> lit in remembrance</p>
+    </div>
+
     <p class="memorial-story"><%= memorial.lifeStory %></p>
 
     <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
   </div>
+
+  <script>
+    const candleBtn = document.getElementById('candleBtn');
+    const candleCountEl = document.getElementById('candleCount');
+    const candlePluralEl = document.getElementById('candlePlural');
+    const candleLabelEl = document.getElementById('candleLabel');
+    const slug = '<%= memorial.slug %>';
+    const storageKey = 'mournhub-lit-' + slug;
+    const glowOverlay = document.getElementById('candleGlowOverlay');
+
+    if (localStorage.getItem(storageKey)) {
+      candleBtn.classList.add('is-lit');
+      candleLabelEl.textContent = 'Candle lit';
+      candleBtn.disabled = true;
+    }
+
+    candleBtn.addEventListener('click', async () => {
+      if (localStorage.getItem(storageKey)) return;
+
+      candleBtn.disabled = true;
+      try {
+        const res = await fetch(`/memorial/${slug}/light-candle`, { method: 'POST' });
+        const data = await res.json();
+
+        if (res.ok) {
+          candleCountEl.textContent = data.candleCount;
+          candlePluralEl.textContent = data.candleCount === 1 ? '' : 's';
+          candleBtn.classList.add('is-lit');
+          candleLabelEl.textContent = 'Candle lit';
+          localStorage.setItem(storageKey, 'true');
+
+          glowOverlay.classList.add('is-active');
+          setTimeout(() => {
+            glowOverlay.classList.remove('is-active');
+          }, 1000); 
+        } else {
+          candleBtn.disabled = false;
+        }
+      } catch (err) {
+        candleBtn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
