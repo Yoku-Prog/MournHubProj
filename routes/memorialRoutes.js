@@ -30,5 +30,9 @@ router.post(
   requireAuth,
   memorialController.deleteMemorial,
 );
-
+router.post(
+  "/memorials/:id/guestbook/:entryId/delete",
+  requireAuth,
+  memorialController.deleteGuestbookEntry,
+);
 module.exports = router;

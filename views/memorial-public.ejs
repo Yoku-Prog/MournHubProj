@@ -13,11 +13,7 @@
 
   <div class="memorial-public">
 
-    <% if (memorial.photoUrl) { %>
-      <div class="memorial-photo-wrap fade-in">
-        <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo">
-      </div>
-    <% } %>
+   <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo" loading="lazy">
 
     <div class="memorial-eyebrow">In loving memory of</div>
     <h1 class="fade-in"><%= memorial.fullName %></h1>
@@ -47,7 +43,25 @@
       </button>
       <p class="candle-count"><span id="candleCount"><%= memorial.candleCount || 0 %></span> candle<span id="candlePlural"><%= (memorial.candleCount === 1) ? '' : 's' %></span> lit in remembrance</p>
     </div>
+    <div class="guestbook-section">
+      <h2 class="guestbook-heading">Messages of remembrance</h2>
 
+      <form id="guestbookForm" class="guestbook-form">
+        <input type="text" id="guestName" name="name" placeholder="Your name" maxlength="60" required>
+        <textarea id="guestMessage" name="message" placeholder="Share a memory or message..." maxlength="500" rows="3" required></textarea>
+        <button type="submit" id="guestbookSubmit">Leave a message</button>
+        <p id="guestbookError" class="error" style="display:none;"></p>
+      </form>
+
+      <div id="guestbookList" class="guestbook-list">
+        <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
+          <div class="guestbook-entry">
+            <p class="guestbook-entry-message"><%= entry.message %></p>
+            <p class="guestbook-entry-meta">&mdash; <%= entry.name %>, <%= new Date(entry.createdAt).toDateString() %></p>
+          </div>
+        <% }) %>
+      </div>
+    </div>
     <p class="memorial-story"><%= memorial.lifeStory %></p>
 
     <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
@@ -94,6 +108,51 @@
         candleBtn.disabled = false;
       }
     });
+    const guestbookForm = document.getElementById('guestbookForm');
+const guestbookList = document.getElementById('guestbookList');
+const guestbookError = document.getElementById('guestbookError');
+const guestbookSubmit = document.getElementById('guestbookSubmit');
+
+guestbookForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  guestbookError.style.display = 'none';
+
+  const name = document.getElementById('guestName').value.trim();
+  const message = document.getElementById('guestMessage').value.trim();
+
+  if (!name || !message) return;
+
+  guestbookSubmit.disabled = true;
+  try {
+    const res = await fetch(`/memorial/${slug}/guestbook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, message })
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      const entryEl = document.createElement('div');
+      entryEl.className = 'guestbook-entry fade-in';
+      entryEl.innerHTML = `
+        <p class="guestbook-entry-message"></p>
+        <p class="guestbook-entry-meta"></p>
+      `;
+      entryEl.querySelector('.guestbook-entry-message').textContent = data.entry.message;
+      entryEl.querySelector('.guestbook-entry-meta').textContent = `— ${data.entry.name}, ${new Date(data.entry.createdAt).toDateString()}`;
+      guestbookList.prepend(entryEl);
+      guestbookForm.reset();
+    } else {
+      guestbookError.textContent = data.error || 'Something went wrong.';
+      guestbookError.style.display = 'block';
+    }
+  } catch (err) {
+    guestbookError.textContent = 'Something went wrong. Please try again.';
+    guestbookError.style.display = 'block';
+  } finally {
+    guestbookSubmit.disabled = false;
+  }
+});
   </script>
 </body>
 </html>

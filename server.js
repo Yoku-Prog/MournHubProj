@@ -12,6 +12,8 @@ const { requireAuth } = require("./middleware/authMiddleware");
 
 const app = express();
 
+const compression = require("compression");
+app.use(compression());
 // View engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -42,11 +44,11 @@ app.use("/", authRoutes);
 const memorialRoutes = require("./routes/memorialRoutes");
 app.use("/", memorialRoutes);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   if (req.session.userId) {
-    return res.redirect('/dashboard');
+    return res.redirect("/dashboard");
   }
-  res.render('landing');
+  res.render("landing");
 });
 
 const publicRoutes = require("./routes/publicRoutes");

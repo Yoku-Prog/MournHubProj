@@ -9,36 +9,50 @@
 </head>
 <body>
   <div class="page-form">
-  <h2><%= memorial ? 'Edit Memorial' : 'Create New Memorial' %></h2>
+    <h2><%= memorial ? 'Edit Memorial' : 'Create New Memorial' %></h2>
 
-  <% if (error) { %>
-    <p style="color:red;"><%= error %></p>
-  <% } %>
-    
-  <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
-    <label>Full Name:</label><br>
-    <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required><br><br>
+    <% if (error) { %>
+      <p style="color:red;"><%= error %></p>
+    <% } %>
+      
+    <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
+      <label>Full Name:</label><br>
+      <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required><br><br>
 
-    <label>Photo (optional):</label><br>
-    <% if (memorial && memorial.photoUrl) { %>
-      <div style="margin-bottom: 10px;">
-        <img src="<%= memorial.photoUrl %>" alt="Current photo" style="max-width: 150px; border-radius: 10px; border: 1px solid #DCE3D6;">
-        <p style="font-size: 12px; color: #7C8B7F; margin-top: 4px;">Current photo — upload a new one to replace it</p>
+      <label>Photo (optional):</label><br>
+      <% if (memorial && memorial.photoUrl) { %>
+        <div style="margin-bottom: 10px;">
+          <img src="<%= memorial.photoUrl %>" alt="Current photo" style="max-width: 150px; border-radius: 10px; border: 1px solid #DCE3D6;">
+          <p style="font-size: 12px; color: #7C8B7F; margin-top: 4px;">Current photo — upload a new one to replace it</p>
+        </div>
+      <% } %>
+      <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><br><br>
+
+      <label>Birth Date:</label><br>
+      <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>"><br><br>
+
+      <label>Death Date:</label><br>
+      <input type="date" name="deathDate" value="<%= memorial && memorial.deathDate ? memorial.deathDate.toISOString().split('T')[0] : '' %>"><br><br>
+
+      <label>Life Story:</label><br>
+      <textarea name="lifeStory" rows="10" cols="50" required><%= memorial ? memorial.lifeStory : '' %></textarea><br><br>
+
+      <button type="submit"><%= memorial ? 'Save Changes' : 'Create Memorial' %></button>
+    </form>
+    <% if (memorial && memorial.guestbookEntries && memorial.guestbookEntries.length > 0) { %>
+      <div style="max-width: 520px; width: 100%; margin-top: 24px;">
+        <h3 style="font-size: 16px; margin-bottom: 12px;">Guestbook messages (<%= memorial.guestbookEntries.length %>)</h3>
+        <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
+          <div class="memorial-card" style="padding: 14px 18px; margin-bottom: 10px;">
+            <p style="font-size: 14px; margin-bottom: 4px;"><%= entry.message %></p>
+            <p style="font-size: 12px; color: #7C8B7F; margin-bottom: 8px;">&mdash; <%= entry.name %>, <%= new Date(entry.createdAt).toDateString() %></p>
+            <form action="/memorials/<%= memorial._id %>/guestbook/<%= entry._id %>/delete" method="POST" onsubmit="return confirm('Delete this message?');">
+              <button type="submit" class="btn-danger" style="padding: 6px 12px; font-size: 12px; margin-top: 0;">Remove</button>
+            </form>
+          </div>
+        <% }) %>
       </div>
     <% } %>
-    <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><br><br>
-
-    <label>Birth Date:</label><br>
-    <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>"><br><br>
-
-    <label>Death Date:</label><br>
-    <input type="date" name="deathDate" value="<%= memorial && memorial.deathDate ? memorial.deathDate.toISOString().split('T')[0] : '' %>"><br><br>
-
-    <label>Life Story:</label><br>
-    <textarea name="lifeStory" rows="10" cols="50" required><%= memorial ? memorial.lifeStory : '' %></textarea><br><br>
-
-    <button type="submit"><%= memorial ? 'Save Changes' : 'Create Memorial' %></button>
-  </form>
   </div>
   <br>
   <a class="back-to-dashboard" href="/dashboard">← Back to Dashboard</a>

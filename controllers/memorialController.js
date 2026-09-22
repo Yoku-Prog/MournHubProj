@@ -30,7 +30,13 @@ exports.uploadPhoto = upload.single("photo");
 function uploadToCloudinary(buffer) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder: "mournhub" },
+      {
+        folder: "mournhub",
+        quality: "auto",
+        fetch_format: "auto",
+        width: 800,
+        crop: "limit",
+      },
       (error, result) => {
         if (error) return reject(error);
         resolve(result.secure_url);
@@ -202,6 +208,26 @@ exports.deleteMemorial = async (req, res) => {
       createdBy: req.session.userId,
     });
     res.redirect("/dashboard");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/dashboard");
+  }
+};
+// Delete a specific guestbook entry (admin only, owner-checked)
+exports.deleteGuestbookEntry = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      _id: req.params.id,
+      createdBy: req.session.userId,
+    });
+    if (!memorial) {
+      return res.redirect("/dashboard");
+    }
+
+    memorial.guestbookEntries.id(req.params.entryId).deleteOne();
+    await memorial.save();
+
+    res.redirect("/memorials/" + req.params.id + "/edit");
   } catch (err) {
     console.error(err);
     res.redirect("/dashboard");

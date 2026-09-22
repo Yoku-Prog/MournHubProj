@@ -260,6 +260,7 @@ button:active,
 
 .cir-btn:hover {
   background: #3e5c4c;
+  color: #dce3d6;
   box-shadow:
     0 1px 1px rgba(46, 59, 52, 0.08),
     0 20px 36px -16px rgba(46, 59, 52, 0.48);
@@ -1125,4 +1126,215 @@ a:hover {
     width: 100%;
     justify-content: center;
   }
+}
+/* === Landing page redesign: scoped overrides === */
+body.landing-page {
+  background-color: #f1ece0;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(62, 92, 76, 0.05) 1px,
+    transparent 0
+  );
+}
+
+body.landing-page .landing-nav {
+  background: rgba(241, 236, 224, 0.85);
+}
+
+body.landing-page .landing-nav.scrolled {
+  background: rgba(241, 236, 224, 0.97);
+}
+
+/* Hero: one deliberate motion moment */
+.hero-flame,
+.hero-flame-inner {
+  opacity: 0;
+  transform-origin: 130px 62px;
+}
+
+.hero-flame.is-lit {
+  animation:
+    hero-flame-in 0.6s ease forwards,
+    flicker-outer 1.6s ease-in-out 0.6s infinite;
+}
+
+.hero-flame.is-lit + .hero-flame-inner {
+  animation:
+    hero-flame-in 0.6s ease 0.15s forwards,
+    flicker-inner 1.3s ease-in-out 0.75s infinite;
+}
+
+@keyframes hero-flame-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.landing-hero h1 {
+  margin-top: 8px;
+}
+
+/* Sequence layout ("How it works") — a real numbered sequence, not cards */
+.landing-sequence h2 {
+  text-align: left;
+  max-width: 640px;
+  margin: 0 auto 36px;
+  font-size: 26px;
+}
+
+.sequence-list {
+  list-style: none;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.sequence-item {
+  display: flex;
+  gap: 24px;
+  padding: 22px 0;
+  border-top: 1px solid #ddd4bc;
+}
+
+.sequence-item:last-child {
+  border-bottom: 1px solid #ddd4bc;
+}
+
+.sequence-number {
+  font-family: "Lora", Georgia, serif;
+  font-size: 22px;
+  color: #a99b6f;
+  font-weight: 600;
+  flex-shrink: 0;
+  width: 36px;
+}
+
+.sequence-item h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.sequence-item p {
+  color: #5c6b60;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* Preview section heading, centered on its own (not an eyebrow pattern) */
+.landing-center-heading {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+
+/* Definition list ("Why MournHub") — plain, no card kit */
+.landing-definitions h2 {
+  text-align: left;
+  max-width: 640px;
+  margin: 0 auto 36px;
+  font-size: 26px;
+}
+
+.definition-list {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.definition-row {
+  padding: 22px 0;
+  border-top: 1px solid #ddd4bc;
+}
+
+.definition-row:last-child {
+  border-bottom: 1px solid #ddd4bc;
+}
+
+.definition-row dt {
+  font-family: "Lora", Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2e3b34;
+  margin-bottom: 6px;
+}
+
+.definition-row dd {
+  color: #5c6b60;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .sequence-item {
+    gap: 16px;
+  }
+  .landing-sequence h2,
+  .landing-definitions h2 {
+    font-size: 22px;
+  }
+}
+.guestbook-section {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 32px;
+}
+
+.guestbook-heading {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.guestbook-form {
+  background: #ffffff;
+  border: 1px solid #edeae0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow:
+    0 1px 2px rgba(46, 59, 52, 0.04),
+    0 6px 16px rgba(46, 59, 52, 0.06);
+}
+
+.guestbook-form input,
+.guestbook-form textarea {
+  margin-bottom: 12px;
+}
+
+.guestbook-form textarea {
+  min-height: 80px;
+}
+
+.guestbook-form button {
+  margin-top: 4px;
+}
+
+.guestbook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.guestbook-entry {
+  background: #ffffff;
+  border: 1px solid #edeae0;
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.guestbook-entry-message {
+  font-size: 15px;
+  color: #2e3b34;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.guestbook-entry-meta {
+  font-size: 12px;
+  color: #7c8b7f;
+  font-style: italic;
 }

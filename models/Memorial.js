@@ -1,5 +1,24 @@
 const mongoose = require("mongoose");
 
+const guestbookEntrySchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 60,
+  },
+  message: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 500,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const memorialSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -34,14 +53,18 @@ const memorialSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-    photoUrl: {
+  photoUrl: {
     type: String,
-    default: null
+    default: null,
   },
-    candleCount: {
+  candleCount: {
     type: Number,
-    default: 0
+    default: 0,
   },
+  guestbookEntries: [guestbookEntrySchema],
 });
+
+memorialSchema.index({ slug: 1 });
+memorialSchema.index({ createdBy: 1 });
 
 module.exports = mongoose.model("Memorial", memorialSchema);
