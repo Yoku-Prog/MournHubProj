@@ -9,52 +9,70 @@
 </head>
 <body>
   <div class="page-form">
-    <h2><%= memorial ? 'Edit Memorial' : 'Create New Memorial' %></h2>
+    <div class="page-form-inner">
+      <h2><%= memorial ? 'Edit Memorial' : 'Create New Memorial' %></h2>
 
-    <% if (error) { %>
-      <p style="color:red;"><%= error %></p>
-    <% } %>
-      
-    <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
-      <label>Full Name:</label><br>
-      <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required><br><br>
+      <% if (error) { %>
+        <p class="error"><%= error %></p>
+      <% } %>
 
-      <label>Photo (optional):</label><br>
-      <% if (memorial && memorial.photoUrl) { %>
-        <div style="margin-bottom: 10px;">
-          <img src="<%= memorial.photoUrl %>" alt="Current photo" style="max-width: 150px; border-radius: 10px; border: 1px solid #DCE3D6;">
-          <p style="font-size: 12px; color: #7C8B7F; margin-top: 4px;">Current photo — upload a new one to replace it</p>
+      <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
+        <label>Full Name:</label>
+        <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required>
+
+        <label>Photo (optional):</label>
+        <% if (memorial && memorial.photoUrl) { %>
+          <div class="current-photo-preview">
+            <img src="<%= memorial.photoUrl %>" alt="Current photo">
+            <p>Current photo — upload a new one to replace it</p>
+          </div>
+        <% } %>
+        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
+
+        <label>Additional Gallery Photos (optional, up to 10):</label>
+        <% if (memorial && memorial.photos && memorial.photos.length > 0) { %>
+          <div class="gallery-preview-grid">
+            <% memorial.photos.forEach(photo => { %>
+              <div class="gallery-preview-item">
+                <img src="<%= photo %>" alt="Gallery photo">
+                <form action="/memorials/<%= memorial._id %>/photos/<%= encodeURIComponent(photo) %>/delete" method="POST" onsubmit="return confirm('Remove this photo?');">
+                  <button type="submit" class="gallery-remove-btn">✕</button>
+                </form>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+        <input type="file" name="galleryPhotos" accept="image/jpeg,image/png,image/webp" multiple>
+
+        <label>Birth Date:</label>
+        <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>">
+
+        <label>Death Date:</label>
+        <input type="date" name="deathDate" value="<%= memorial && memorial.deathDate ? memorial.deathDate.toISOString().split('T')[0] : '' %>">
+
+        <label>Life Story:</label>
+        <textarea name="lifeStory" rows="10" required><%= memorial ? memorial.lifeStory : '' %></textarea>
+
+        <button type="submit"><%= memorial ? 'Save Changes' : 'Create Memorial' %></button>
+      </form>
+
+      <% if (memorial && memorial.guestbookEntries && memorial.guestbookEntries.length > 0) { %>
+        <div class="guestbook-moderation">
+          <h3>Guestbook messages (<%= memorial.guestbookEntries.length %>)</h3>
+          <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
+            <div class="memorial-card guestbook-moderation-entry">
+              <p class="guestbook-moderation-message"><%= entry.message %></p>
+              <p class="guestbook-moderation-meta">&mdash; <%= entry.name %>, <%= new Date(entry.createdAt).toDateString() %></p>
+              <form action="/memorials/<%= memorial._id %>/guestbook/<%= entry._id %>/delete" method="POST" onsubmit="return confirm('Delete this message?');">
+                <button type="submit" class="btn-danger">Remove</button>
+              </form>
+            </div>
+          <% }) %>
         </div>
       <% } %>
-      <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"><br><br>
 
-      <label>Birth Date:</label><br>
-      <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>"><br><br>
-
-      <label>Death Date:</label><br>
-      <input type="date" name="deathDate" value="<%= memorial && memorial.deathDate ? memorial.deathDate.toISOString().split('T')[0] : '' %>"><br><br>
-
-      <label>Life Story:</label><br>
-      <textarea name="lifeStory" rows="10" cols="50" required><%= memorial ? memorial.lifeStory : '' %></textarea><br><br>
-
-      <button type="submit"><%= memorial ? 'Save Changes' : 'Create Memorial' %></button>
-    </form>
-    <% if (memorial && memorial.guestbookEntries && memorial.guestbookEntries.length > 0) { %>
-      <div style="max-width: 520px; width: 100%; margin-top: 24px;">
-        <h3 style="font-size: 16px; margin-bottom: 12px;">Guestbook messages (<%= memorial.guestbookEntries.length %>)</h3>
-        <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
-          <div class="memorial-card" style="padding: 14px 18px; margin-bottom: 10px;">
-            <p style="font-size: 14px; margin-bottom: 4px;"><%= entry.message %></p>
-            <p style="font-size: 12px; color: #7C8B7F; margin-bottom: 8px;">&mdash; <%= entry.name %>, <%= new Date(entry.createdAt).toDateString() %></p>
-            <form action="/memorials/<%= memorial._id %>/guestbook/<%= entry._id %>/delete" method="POST" onsubmit="return confirm('Delete this message?');">
-              <button type="submit" class="btn-danger" style="padding: 6px 12px; font-size: 12px; margin-top: 0;">Remove</button>
-            </form>
-          </div>
-        <% }) %>
-      </div>
-    <% } %>
+      <a class="back-to-dashboard" href="/dashboard">← Back to Dashboard</a>
+    </div>
   </div>
-  <br>
-  <a class="back-to-dashboard" href="/dashboard">← Back to Dashboard</a>
 </body>
 </html>

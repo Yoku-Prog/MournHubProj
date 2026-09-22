@@ -9,11 +9,11 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-console.log("Cloudinary config check:", cloudinary.config().cloud_name);
+
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
   fileFilter: (req, file, cb) => {
     const allowed = ["image/jpeg", "image/png", "image/webp"];
     if (allowed.includes(file.mimetype)) {
@@ -24,7 +24,10 @@ const upload = multer({
   },
 });
 
-exports.uploadPhoto = upload.single("photo");
+exports.uploadPhoto = upload.fields([
+  { name: "photo", maxCount: 1 },
+  { name: "galleryPhotos", maxCount: 10 },
+]);
 
 // Helper: upload a buffer to Cloudinary and return the resulting URL
 function uploadToCloudinary(buffer) {
@@ -45,15 +48,16 @@ function uploadToCloudinary(buffer) {
     stream.end(buffer);
   });
 }
+
 // Helper: generate a unique, URL-safe slug from the person's name
 function generateSlug(fullName) {
   const base = fullName
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, "") // remove special characters
-    .replace(/\s+/g, "-"); // spaces to dashes
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-");
 
-  const randomSuffix = crypto.randomBytes(3).toString("hex"); // e.g. "a1b2c3"
+  const randomSuffix = crypto.randomBytes(3).toString("hex");
   return `${base}-${randomSuffix}`;
 }
 
@@ -64,7 +68,6 @@ exports.listMemorials = async (req, res) => {
       createdBy: req.session.userId,
     }).sort({ createdAt: -1 });
 
-    // Generate QR code data URLs for public memorials
     const memorialsWithQR = await Promise.all(
       memorials.map(async (memorial) => {
         const memorialObj = memorial.toObject();
@@ -108,8 +111,15 @@ exports.createMemorial = async (req, res) => {
     const slug = generateSlug(fullName);
 
     let photoUrl = null;
-    if (req.file) {
-      photoUrl = await uploadToCloudinary(req.file.buffer);
+    if (req.files && req.files.photo && req.files.photo[0]) {
+      photoUrl = await uploadToCloudinary(req.files.photo[0].buffer);
+    }
+
+    let photos = [];
+    if (req.files && req.files.galleryPhotos) {
+      photos = await Promise.all(
+        req.files.galleryPhotos.map((file) => uploadToCloudinary(file.buffer)),
+      );
     }
 
     const newMemorial = new Memorial({
@@ -119,6 +129,7 @@ exports.createMemorial = async (req, res) => {
       lifeStory,
       slug,
       photoUrl,
+      photos,
       createdBy: req.session.userId,
     });
 
@@ -168,8 +179,15 @@ exports.updateMemorial = async (req, res) => {
     memorial.deathDate = deathDate || null;
     memorial.lifeStory = lifeStory;
 
-    if (req.file) {
-      memorial.photoUrl = await uploadToCloudinary(req.file.buffer);
+    if (req.files && req.files.photo && req.files.photo[0]) {
+      memorial.photoUrl = await uploadToCloudinary(req.files.photo[0].buffer);
+    }
+
+    if (req.files && req.files.galleryPhotos) {
+      const newPhotos = await Promise.all(
+        req.files.galleryPhotos.map((file) => uploadToCloudinary(file.buffer)),
+      );
+      memorial.photos = [...(memorial.photos || []), ...newPhotos];
     }
 
     await memorial.save();
@@ -213,6 +231,29 @@ exports.deleteMemorial = async (req, res) => {
     res.redirect("/dashboard");
   }
 };
+
+// Remove a single gallery photo
+exports.deleteGalleryPhoto = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      _id: req.params.id,
+      createdBy: req.session.userId,
+    });
+    if (!memorial) {
+      return res.redirect("/dashboard");
+    }
+
+    const photoUrl = decodeURIComponent(req.params.photoUrl);
+    memorial.photos = memorial.photos.filter((p) => p !== photoUrl);
+    await memorial.save();
+
+    res.redirect("/memorials/" + req.params.id + "/edit");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/dashboard");
+  }
+};
+
 // Delete a specific guestbook entry (admin only, owner-checked)
 exports.deleteGuestbookEntry = async (req, res) => {
   try {

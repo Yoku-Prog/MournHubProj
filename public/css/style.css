@@ -1338,3 +1338,146 @@ body.landing-page .landing-nav.scrolled {
   color: #7c8b7f;
   font-style: italic;
 }
+.memorial-gallery {
+  width: 100%;
+  max-width: 600px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 8px;
+  margin: 28px 0;
+}
+
+.gallery-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #dce3d6;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.gallery-thumb:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(46, 59, 52, 0.15);
+}
+
+.lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(46, 59, 52, 0.9);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: zoom-out;
+}
+
+.lightbox.is-open {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 8px;
+}
+.page-form-inner {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.page-form-inner form {
+  width: 100%;
+}
+
+.current-photo-preview {
+  margin-bottom: 10px;
+}
+
+.current-photo-preview img {
+  max-width: 150px;
+  border-radius: 10px;
+  border: 1px solid #dce3d6;
+  display: block;
+}
+
+.current-photo-preview p {
+  font-size: 12px;
+  color: #7c8b7f;
+  margin-top: 4px;
+}
+
+.gallery-preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.gallery-preview-item {
+  position: relative;
+}
+
+.gallery-preview-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #dce3d6;
+  display: block;
+}
+
+.gallery-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 12px;
+  margin-top: 0;
+  line-height: 1;
+}
+
+.guestbook-moderation {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.guestbook-moderation h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.guestbook-moderation-entry {
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+
+.guestbook-moderation-message {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.guestbook-moderation-meta {
+  font-size: 12px;
+  color: #7c8b7f;
+  margin-bottom: 8px;
+}
+
+.guestbook-moderation-entry button {
+  padding: 6px 12px;
+  font-size: 12px;
+  margin-top: 0;
+}
+
+.page-form .back-to-dashboard {
+  display: inline-block;
+  margin-top: 20px;
+}

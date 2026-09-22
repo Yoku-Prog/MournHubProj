@@ -61,10 +61,13 @@ const memorialSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  photos: {
+    type: [String],
+    default: [],
+  },
   guestbookEntries: [guestbookEntrySchema],
 });
 
-memorialSchema.index({ slug: 1 });
 memorialSchema.index({ createdBy: 1 });
 
 module.exports = mongoose.model("Memorial", memorialSchema);

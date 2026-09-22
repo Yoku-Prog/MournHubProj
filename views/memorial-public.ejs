@@ -63,7 +63,17 @@
       </div>
     </div>
     <p class="memorial-story"><%= memorial.lifeStory %></p>
+    <% if (memorial.photos && memorial.photos.length > 0) { %>
+      <div class="memorial-gallery">
+        <% memorial.photos.forEach((photo, index) => { %>
+          <img src="<%= photo %>" alt="Photo of <%= memorial.fullName %>" class="gallery-thumb" loading="lazy" onclick="openLightbox('<%= photo %>')">
+        <% }) %>
+      </div>
 
+      <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="Enlarged photo">
+      </div>
+    <% } %>
     <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
   </div>
 
@@ -153,6 +163,13 @@ guestbookForm.addEventListener('submit', async (e) => {
     guestbookSubmit.disabled = false;
   }
 });
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('is-open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('is-open');
+}
   </script>
 </body>
 </html>
