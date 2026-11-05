@@ -452,7 +452,7 @@ a:hover {
   margin-bottom: 6px;
 }
 
-.memorial-public .memorial-eyebrow {
+.memorial-eyebrow {
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -471,7 +471,7 @@ a:hover {
   margin-bottom: 20px;
 }
 
-.memorial-public .memorial-divider {
+.memorial-divider {
   width: 60px;
   border: none;
   border-top: 1px solid #dce3d6;
@@ -508,15 +508,10 @@ a:hover {
   font-weight: 500;
 }
 
-.memorial-photo-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
 .memorial-photo {
   width: 140px;
   height: 140px;
+  margin-bottom: 20px;
   object-fit: cover;
   border-radius: 50%;
   border: 4px solid #ffffff;
@@ -715,55 +710,6 @@ a:hover {
   font-style: italic;
 }
 
-/* Gallery + lightbox */
-.memorial-gallery {
-  width: 100%;
-  max-width: 600px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 8px;
-  margin: 28px 0;
-}
-
-.gallery-thumb {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #dce3d6;
-  cursor: pointer;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.gallery-thumb:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 12px rgba(46, 59, 52, 0.15);
-}
-
-.lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(46, 59, 52, 0.9);
-  z-index: 2000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  cursor: zoom-out;
-}
-
-.lightbox.is-open {
-  display: flex;
-}
-
-.lightbox img {
-  max-width: 100%;
-  max-height: 90vh;
-  border-radius: 8px;
-}
-
 /* Form pages (create/edit memorial) */
 .page-form {
   display: flex;
@@ -784,7 +730,7 @@ a:hover {
   margin: 0 auto;
 }
 
-.page-form-inner form {
+.memorial-form-card {
   width: 100%;
   background: #ffffff;
   padding: 40px;
@@ -1618,7 +1564,7 @@ body.landing-page .landing-nav.scrolled {
     padding: 28px 24px;
     border-radius: 16px;
   }
-  .page-form-inner form {
+  .memorial-form-card {
     padding: 28px 24px;
   }
   .memorial-photo {
@@ -1823,5 +1769,231 @@ body.landing-page .landing-nav.scrolled {
   }
   .gallery-grid-item img {
     height: 180px;
+  }
+}
+
+/* Landing page: slide-in tiles start offset and shouldn't widen the page */
+@media (max-width: 1200px) {
+  .landing-sequence,
+  .landing-definitions {
+    overflow-x: clip;
+  }
+}
+
+.preview-photo--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dce3d6;
+  color: #3e5c4c;
+  font-family: "Lora", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* A few gallery photos sit still instead of scrolling */
+.memorial-gallery-preview.is-static {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.memorial-gallery-preview.is-static .gallery-track {
+  width: auto;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: none;
+}
+
+/* Auth pages + error pages */
+.auth-footnote {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #7c8b7f;
+}
+
+.auth-footnote--tight {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.error-page {
+  text-align: center;
+}
+
+.error-page p {
+  color: #5c6b60;
+}
+
+/* Dashboard */
+.top-bar {
+  margin-top: 28px;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.link-button {
+  width: auto;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  color: #7c8b7f;
+  text-decoration: underline;
+}
+
+.link-button:hover {
+  background: none;
+  box-shadow: none;
+  color: #2e3b34;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  margin-bottom: 0;
+}
+
+.section-header .btn {
+  margin-top: 0;
+}
+
+.empty-state {
+  background: #ffffff;
+  border: 1px dashed #dce3d6;
+  border-radius: 14px;
+  padding: 40px 24px;
+  text-align: center;
+  color: #5c6b60;
+}
+
+.memorial-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.memorial-card-photo {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #dce3d6;
+}
+
+.memorial-card .status-badge {
+  margin: 4px 0 6px;
+}
+
+.memorial-card-stats {
+  font-size: 13px;
+  color: #7c8b7f;
+}
+
+.memorial-actions button,
+.memorial-actions .btn {
+  margin-top: 0;
+  padding: 9px 18px;
+  line-height: 1.4;
+}
+
+.qr-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.qr-details {
+  flex: 1;
+  min-width: 200px;
+}
+
+.qr-label {
+  font-size: 12px;
+  color: #7c8b7f;
+}
+
+.qr-link {
+  display: block;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.btn.qr-download {
+  margin-top: 12px;
+  padding: 8px 16px;
+}
+
+/* Manage admins */
+.admin-section-heading {
+  margin-top: 32px;
+}
+
+.admin-empty {
+  color: #7c8b7f;
+  font-size: 14px;
+}
+
+.admin-email {
+  color: #7c8b7f;
+  font-size: 14px;
+}
+
+.memorial-card > .status-badge {
+  margin: 0 0 0 8px;
+}
+
+.reset-link-notice input {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .top-bar {
+    margin-top: 12px;
+  }
+  .qr-section {
+    justify-content: center;
+  }
+  .btn.qr-download {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-track {
+    animation: none;
+  }
+  .memorial-gallery-preview {
+    overflow-x: auto;
+  }
+  .hero-flame.is-lit,
+  .hero-flame.is-lit + .hero-flame-inner {
+    animation: none;
+    opacity: 1;
+  }
+  .candle-btn.is-lit .flame-outer,
+  .candle-btn.is-lit .flame-inner {
+    animation: none;
   }
 }

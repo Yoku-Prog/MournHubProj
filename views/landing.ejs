@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>MournHub - Honor a life, always within reach</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/css/style.css" />
+    <%- include("partials/head", { title: "MournHub - Honor a life, always within reach" }) %>
+    <meta name="description" content="Create a lasting online memorial for a loved one, and let visitors reach it with a simple QR code." />
+    <meta property="og:title" content="MournHub - A lasting tribute, one scan away" />
+    <meta property="og:description" content="Create a lasting online memorial for a loved one, and let visitors reach it with a simple QR code." />
+    <script src="/js/landing.js" defer></script>
   </head>
   <body class="landing-page">
     <div class="scroll-progress-bar" id="scrollProgress"></div>
@@ -24,7 +21,10 @@
         <a href="#how-it-works">How it works</a>
         <a href="#preview">Preview</a>
         <a href="#why">Why MournHub</a>
-        <a href="mailto:youremail@example.com">Contact</a>
+        <% if (contactEmail) { %>
+        <a href="mailto:<%= contactEmail %>">Contact</a>
+        <% } %>
+        <a href="/login">Log in</a>
       </div>
     </nav>
 
@@ -103,7 +103,8 @@
         it with a simple QR code — right at the place they're laid to rest.
       </p>
       <div class="landing-cta">
-        <a href="mailto:youremail@example.com" class="cir-btn">
+        <% if (contactEmail) { %>
+        <a href="mailto:<%= contactEmail %>" class="cir-btn">
           Get in touch
           <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
             <path
@@ -115,6 +116,7 @@
             />
           </svg>
         </a>
+        <% } %>
         <a href="/register" class="cir-btn cir-btn--secondary">
           Request Admin Access
           <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
@@ -174,11 +176,9 @@
 
       <div class="landing-preview">
         <div class="landing-preview-frame">
-          <img
-            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop"
-            alt=""
-            class="preview-photo"
-          />
+          <div class="preview-photo preview-photo--initials" aria-hidden="true">
+            JD
+          </div>
           <div class="memorial-eyebrow">In loving memory of</div>
           <h3 style="font-size: 22px; margin-bottom: 4px">Juan Dela Cruz</h3>
           <p
@@ -245,87 +245,12 @@
 
     <footer class="landing-footer">
       <p>MournHub &mdash; a space to remember.</p>
+      <p class="landing-footer-admin"><a href="/login">Admin login</a></p>
     </footer>
 
     <button id="backToTop" class="back-to-top" aria-label="Back to top">
       ↑
     </button>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Sticky header shadow on scroll
-        const nav = document.getElementById("landingNav");
-        window.addEventListener("scroll", () => {
-          if (window.scrollY > 10) {
-            nav.classList.add("scrolled");
-          } else {
-            nav.classList.remove("scrolled");
-          }
-        });
-
-        // Scroll progress bar
-        const progressBar = document.getElementById("scrollProgress");
-        window.addEventListener("scroll", () => {
-          const scrollTop = window.scrollY;
-          const docHeight =
-            document.documentElement.scrollHeight - window.innerHeight;
-          const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-          progressBar.style.width = percent + "%";
-        });
-
-        // Mobile menu toggle
-        const navToggle = document.getElementById("navToggle");
-        const navLinks = document.getElementById("navLinks");
-        navToggle.addEventListener("click", () => {
-          navLinks.classList.toggle("is-open");
-          navToggle.classList.toggle("is-active");
-        });
-        navLinks.querySelectorAll("a").forEach((link) => {
-          link.addEventListener("click", () => {
-            navLinks.classList.remove("is-open");
-            navToggle.classList.remove("is-active");
-          });
-        });
-
-        // Back to top button
-        const backToTop = document.getElementById("backToTop");
-        window.addEventListener("scroll", () => {
-          if (window.scrollY > 400) {
-            backToTop.classList.add("is-visible");
-          } else {
-            backToTop.classList.remove("is-visible");
-          }
-        });
-        backToTop.addEventListener("click", () => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        });
-
-        // The one deliberate motion moment: hero flame flickers to life on load
-        const flame = document.getElementById("heroFlame");
-        setTimeout(() => flame.classList.add("is-lit"), 400);
-
-        // Slide-in reveal for sequence items + definition rows. threshold:0.1
-        // and a negative bottom rootMargin mean a tile starts sliding while
-        // it's still mostly below the fold, so the full motion is visible
-        // instead of only its last 20%. The class is added AND removed here
-        // (no unobserve), so scrolling a tile back out of view resets it to
-        // hidden/offset, ready to slide in again next time it's seen.
-        const slideObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("in-view");
-              } else {
-                entry.target.classList.remove("in-view");
-              }
-            });
-          },
-          { threshold: 0.1, rootMargin: "0px 0px -60px 0px" },
-        );
-        document
-          .querySelectorAll(".sequence-item, .definition-row")
-          .forEach((el) => slideObserver.observe(el));
-      });
-    </script>
   </body>
 </html>

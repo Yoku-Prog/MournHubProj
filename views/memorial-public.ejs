@@ -1,28 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title><%= memorial.fullName %> - MournHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <%- include("partials/head", { title: memorial.fullName + " - MournHub" }) %>
+  <%# Families share these pages by link and QR code, so they stay out of search results. %>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="<%= memorial.lifeStory.slice(0, 160) %>">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="In loving memory of <%= memorial.fullName %>">
+  <meta property="og:description" content="<%= memorial.lifeStory.slice(0, 160) %>">
+  <meta property="og:url" content="<%= publicUrl %>">
+  <% if (memorial.photoUrl) { %>
+    <meta property="og:image" content="<%= memorial.photoUrl %>">
+  <% } %>
+  <script src="/js/memorial.js" defer></script>
 </head>
-<body>
+<body data-slug="<%= memorial.slug %>">
 
   <div id="candleGlowOverlay" class="candle-glow-overlay"></div>
 
   <div class="memorial-public">
 
-   <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo" loading="lazy">
+    <% if (memorial.photoUrl) { %>
+      <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo">
+    <% } %>
 
     <div class="memorial-eyebrow">In loving memory of</div>
     <h1 class="fade-in"><%= memorial.fullName %></h1>
 
     <% if (memorial.birthDate || memorial.deathDate) { %>
       <p class="memorial-dates">
-        <% if (memorial.birthDate) { %><%= memorial.birthDate.toDateString() %><% } %>
-        &mdash;
-        <% if (memorial.deathDate) { %><%= memorial.deathDate.toDateString() %><% } %>
+        <% if (memorial.birthDate) { %><%= formatDate(memorial.birthDate) %><% } %>
+        <% if (memorial.birthDate && memorial.deathDate) { %>&mdash;<% } %>
+        <% if (memorial.deathDate) { %><%= formatDate(memorial.deathDate) %><% } %>
       </p>
     <% } %>
 
@@ -30,7 +39,7 @@
 
     <div class="candle-section">
       <button id="candleBtn" class="candle-btn">
-        <svg class="candle-icon" viewBox="0 0 24 30" width="30" height="38">
+        <svg class="candle-icon" viewBox="0 0 24 30" width="30" height="38" aria-hidden="true">
           <rect x="8" y="16" width="8" height="12" rx="2" fill="#FBF8F3" stroke="#DCE3D6" stroke-width="1"/>
           <ellipse cx="12" cy="16" rx="4" ry="1.5" fill="#F6F3EC" stroke="#DCE3D6" stroke-width="0.8"/>
           <line x1="12" y1="16" x2="12" y2="10" stroke="#5C4A3A" stroke-width="1.5" stroke-linecap="round"/>
@@ -43,12 +52,28 @@
       </button>
       <p class="candle-count"><span id="candleCount"><%= memorial.candleCount || 0 %></span> candle<span id="candlePlural"><%= (memorial.candleCount === 1) ? '' : 's' %></span> lit in remembrance</p>
     </div>
+
+    <p class="memorial-story"><%= memorial.lifeStory %></p>
+
+    <% if (memorial.photos && memorial.photos.length > 0) { %>
+      <%# Too few photos to fill the row: show them still rather than scrolling repeats %>
+      <% const isStatic = memorial.photos.length <= 4; %>
+      <div class="memorial-gallery-preview <%= isStatic ? 'is-static' : '' %>">
+        <div class="gallery-track">
+          <% (isStatic ? memorial.photos : memorial.photos.concat(memorial.photos)).forEach(photo => { %>
+            <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>" class="gallery-track-thumb" loading="lazy">
+          <% }) %>
+        </div>
+      </div>
+      <a href="/memorial/<%= memorial.slug %>/gallery" class="view-all-photos-link">View all photos →</a>
+    <% } %>
+
     <div class="guestbook-section">
       <h2 class="guestbook-heading">Messages of remembrance</h2>
 
       <form id="guestbookForm" class="guestbook-form">
-        <input type="text" id="guestName" name="name" placeholder="Your name" maxlength="60" required>
-        <textarea id="guestMessage" name="message" placeholder="Share a memory or message..." maxlength="500" rows="3" required></textarea>
+        <input type="text" id="guestName" name="name" placeholder="Your name" aria-label="Your name" maxlength="60" required>
+        <textarea id="guestMessage" name="message" placeholder="Share a memory or message..." aria-label="Your message" maxlength="500" rows="3" required></textarea>
         <button type="submit" id="guestbookSubmit">Leave a message</button>
         <p id="guestbookError" class="error" style="display:none;"></p>
       </form>
@@ -62,107 +87,8 @@
         <% }) %>
       </div>
     </div>
-    <p class="memorial-story"><%= memorial.lifeStory %></p>
-    <% if (memorial.photos && memorial.photos.length > 0) { %>
-      <div class="memorial-gallery-preview">
-        <div class="gallery-track">
-          <% memorial.photos.concat(memorial.photos).forEach(photo => { %>
-            <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>" class="gallery-track-thumb" loading="lazy">
-          <% }) %>
-        </div>
-      </div>
-      <a href="/memorial/<%= memorial.slug %>/gallery" class="view-all-photos-link">View all photos →</a>
-    <% } %>
+
     <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
   </div>
-
-  <script>
-    const candleBtn = document.getElementById('candleBtn');
-    const candleCountEl = document.getElementById('candleCount');
-    const candlePluralEl = document.getElementById('candlePlural');
-    const candleLabelEl = document.getElementById('candleLabel');
-    const slug = '<%= memorial.slug %>';
-    const storageKey = 'mournhub-lit-' + slug;
-    const glowOverlay = document.getElementById('candleGlowOverlay');
-
-    if (localStorage.getItem(storageKey)) {
-      candleBtn.classList.add('is-lit');
-      candleLabelEl.textContent = 'Candle lit';
-      candleBtn.disabled = true;
-    }
-
-    candleBtn.addEventListener('click', async () => {
-      if (localStorage.getItem(storageKey)) return;
-
-      candleBtn.disabled = true;
-      try {
-        const res = await fetch(`/memorial/${slug}/light-candle`, { method: 'POST' });
-        const data = await res.json();
-
-        if (res.ok) {
-          candleCountEl.textContent = data.candleCount;
-          candlePluralEl.textContent = data.candleCount === 1 ? '' : 's';
-          candleBtn.classList.add('is-lit');
-          candleLabelEl.textContent = 'Candle lit';
-          localStorage.setItem(storageKey, 'true');
-
-          glowOverlay.classList.add('is-active');
-          setTimeout(() => {
-            glowOverlay.classList.remove('is-active');
-          }, 1000); 
-        } else {
-          candleBtn.disabled = false;
-        }
-      } catch (err) {
-        candleBtn.disabled = false;
-      }
-    });
-    const guestbookForm = document.getElementById('guestbookForm');
-const guestbookList = document.getElementById('guestbookList');
-const guestbookError = document.getElementById('guestbookError');
-const guestbookSubmit = document.getElementById('guestbookSubmit');
-
-guestbookForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  guestbookError.style.display = 'none';
-
-  const name = document.getElementById('guestName').value.trim();
-  const message = document.getElementById('guestMessage').value.trim();
-
-  if (!name || !message) return;
-
-  guestbookSubmit.disabled = true;
-  try {
-    const res = await fetch(`/memorial/${slug}/guestbook`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, message })
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      const entryEl = document.createElement('div');
-      entryEl.className = 'guestbook-entry fade-in';
-      entryEl.innerHTML = `
-        <p class="guestbook-entry-message"></p>
-        <p class="guestbook-entry-meta"></p>
-      `;
-      entryEl.querySelector('.guestbook-entry-message').textContent = data.entry.message;
-      entryEl.querySelector('.guestbook-entry-meta').textContent = `— ${data.entry.name}, ${new Date(data.entry.createdAt).toDateString()}`;
-      guestbookList.prepend(entryEl);
-      guestbookForm.reset();
-    } else {
-      guestbookError.textContent = data.error || 'Something went wrong.';
-      guestbookError.style.display = 'block';
-    }
-  } catch (err) {
-    guestbookError.textContent = 'Something went wrong. Please try again.';
-    guestbookError.style.display = 'block';
-  } finally {
-    guestbookSubmit.disabled = false;
-  }
-});
-  
-  </script>
 </body>
 </html>

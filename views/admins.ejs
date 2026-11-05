@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include("partials/head", { title: "Manage Admins - MournHub" }) %>
+  <script src="/js/forms.js" defer></script>
+</head>
+<body>
+  <div class="top-bar">
+    <h2>Manage admins</h2>
+    <a href="/dashboard" class="logout-link">← Back to dashboard</a>
+  </div>
+
+  <div class="wide-container">
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <% if (resetLink) { %>
+      <div class="notice reset-link-notice">
+        <p>Send this password reset link to <strong><%= resetLinkFor %></strong>. It works once, expires in 24 hours, and won't be shown again.</p>
+        <input type="text" value="<%= resetLink %>" aria-label="Password reset link" readonly>
+      </div>
+    <% } %>
+
+    <h3>Waiting for approval</h3>
+    <% if (pendingAdmins.length === 0) { %>
+      <p class="admin-empty">No accounts are waiting for approval.</p>
+    <% } %>
+    <% pendingAdmins.forEach(admin => { %>
+      <div class="memorial-card">
+        <strong><%= admin.name %></strong><br>
+        <span class="admin-email"><%= admin.email %></span>
+        <div class="memorial-actions">
+          <form action="/admins/<%= admin._id %>/approve" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+            <button type="submit">Approve</button>
+          </form>
+          <form action="/admins/<%= admin._id %>/reject" method="POST" data-confirm="Reject and delete this account?">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+            <button type="submit" class="btn-danger">Reject</button>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+
+    <h3 class="admin-section-heading">Approved</h3>
+    <% approvedAdmins.forEach(admin => { %>
+      <div class="memorial-card">
+        <strong><%= admin.name %></strong>
+        <% if (admin.role === 'superadmin') { %><span class="status-badge status-public">Superadmin</span><% } %>
+        <br>
+        <span class="admin-email"><%= admin.email %></span>
+        <div class="memorial-actions">
+          <form action="/admins/<%= admin._id %>/reset-link" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+            <button type="submit" class="btn-secondary">Create password reset link</button>
+          </form>
+          <% if (admin.role !== 'superadmin') { %>
+            <form action="/admins/<%= admin._id %>/revoke" method="POST" data-confirm="Revoke this admin's access? They'll be logged out, and their published memorials will stay online.">
+              <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+              <button type="submit" class="btn-danger">Revoke access</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</body>
+</html>

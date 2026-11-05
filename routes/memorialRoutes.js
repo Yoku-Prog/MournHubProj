@@ -2,19 +2,7 @@ const express = require("express");
 const router = express.Router();
 const memorialController = require("../controllers/memorialController");
 const { requireAuth } = require("../middleware/authMiddleware");
-
-const handleUploadErrors = (err, req, res, next) => {
-  if (err) {
-    return res.render("memorial-form", {
-      memorial: req.body,
-      error:
-        err.code === "LIMIT_FILE_SIZE"
-          ? "One of your photos is too large. Please use images under 10MB each."
-          : "There was a problem uploading your photos: " + err.message,
-    });
-  }
-  next();
-};
+const { verifyCsrf } = require("../middleware/csrf");
 
 router.get("/dashboard", requireAuth, memorialController.listMemorials);
 
@@ -23,7 +11,8 @@ router.post(
   "/memorials/new",
   requireAuth,
   memorialController.uploadPhoto,
-  handleUploadErrors,
+  memorialController.handleUploadErrors,
+  verifyCsrf,
   memorialController.createMemorial,
 );
 router.get("/memorials/:id/edit", requireAuth, memorialController.getEditForm);
@@ -31,35 +20,42 @@ router.post(
   "/memorials/:id/edit",
   requireAuth,
   memorialController.uploadPhoto,
-  handleUploadErrors,
+  memorialController.handleUploadErrors,
+  verifyCsrf,
   memorialController.updateMemorial,
 );
+router.get("/memorials/:id/qr.png", requireAuth, memorialController.getQrCode);
 
 router.post(
   "/memorials/:id/toggle-publish",
   requireAuth,
+  verifyCsrf,
   memorialController.togglePublish,
 );
 router.post(
   "/memorials/:id/delete",
   requireAuth,
+  verifyCsrf,
   memorialController.deleteMemorial,
 );
 
 router.post(
   "/memorials/:id/photos/:photoId/delete",
   requireAuth,
+  verifyCsrf,
   memorialController.deleteGalleryPhoto,
 );
 router.post(
   "/memorials/:id/photos/:photoId/caption",
   requireAuth,
+  verifyCsrf,
   memorialController.updatePhotoCaption,
 );
 
 router.post(
   "/memorials/:id/guestbook/:entryId/delete",
   requireAuth,
+  verifyCsrf,
   memorialController.deleteGuestbookEntry,
 );
 
