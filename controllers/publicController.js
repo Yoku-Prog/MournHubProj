@@ -18,7 +18,24 @@ exports.viewPublicMemorial = async (req, res) => {
   }
 };
 
-// Light a candle (public, no auth required)
+exports.viewGallery = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      slug: req.params.slug,
+      isPublic: true,
+    });
+
+    if (!memorial) {
+      return res.status(404).send("Memorial not found or not published.");
+    }
+
+    res.render("memorial-gallery", { memorial });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Something went wrong loading this gallery.");
+  }
+};
+
 exports.lightCandle = async (req, res) => {
   try {
     const memorial = await Memorial.findOneAndUpdate(
@@ -37,7 +54,7 @@ exports.lightCandle = async (req, res) => {
     res.status(500).json({ error: "Something went wrong." });
   }
 };
-// Add a guestbook entry (public, no auth required)
+
 exports.addGuestbookEntry = async (req, res) => {
   try {
     const { name, message } = req.body;

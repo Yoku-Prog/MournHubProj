@@ -62,7 +62,12 @@ const memorialSchema = new mongoose.Schema({
     default: 0,
   },
   photos: {
-    type: [String],
+    type: [
+      {
+        url: { type: String, required: true },
+        caption: { type: String, default: "", trim: true, maxlength: 200 },
+      },
+    ],
     default: [],
   },
   guestbookEntries: [guestbookEntrySchema],

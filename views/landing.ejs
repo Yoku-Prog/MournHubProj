@@ -36,16 +36,65 @@
           width="180"
           height="126"
           role="img"
-          aria-label="A leaf resting beside a glowing candle"
+          aria-label="A candle glowing between two drooping leaves"
         >
-          <ellipse cx="100" cy="128" rx="70" ry="6" fill="#DCD5BE" opacity="0.5" />
-          <path d="M60 128 L60 70 Q60 55 75 50 Q65 65 68 80 Q70 100 60 128 Z" fill="#3E5C4C" />
-          <path d="M60 70 Q60 55 75 50" fill="none" stroke="#2E3B34" stroke-width="1" />
-          <ellipse cx="130" cy="115" rx="16" ry="8" fill="#EFE1C8" />
-          <rect x="120" y="70" width="20" height="45" rx="4" fill="#FBF8F3" stroke="#DCD5BE" stroke-width="1" />
-          <ellipse cx="130" cy="70" rx="10" ry="4" fill="#F6F3EC" />
-          <path id="heroFlame" class="hero-flame" d="M130 62 Q126 52 130 44 Q134 52 130 62 Z" fill="#F0985C" />
-          <path class="hero-flame-inner" d="M130 58 Q128 52 130 47 Q132 52 130 58 Z" fill="#FAD7A0" />
+          <ellipse
+            cx="100"
+            cy="128"
+            rx="70"
+            ry="6"
+            fill="#DCD5BE"
+            opacity="0.5"
+          />
+
+          <!-- Left leaf, drooping outward and down -->
+          <path
+            d="M85 128 C85 100 83 75 75 58 C69 46 55 38 35 40 C53 46 65 60 68 82 C70 100 76 118 85 128 Z"
+            fill="#3E5C4C"
+          />
+          <path
+            d="M75 58 C69 46 55 38 35 40"
+            fill="none"
+            stroke="#2E3B34"
+            stroke-width="1"
+          />
+
+          <!-- Right leaf, mirrored -->
+          <path
+            d="M115 128 C115 100 117 75 125 58 C131 46 145 38 165 40 C147 46 135 60 132 82 C130 100 124 118 115 128 Z"
+            fill="#3E5C4C"
+          />
+          <path
+            d="M125 58 C131 46 145 38 165 40"
+            fill="none"
+            stroke="#2E3B34"
+            stroke-width="1"
+          />
+
+          <!-- Candle, centered -->
+          <ellipse cx="100" cy="115" rx="16" ry="8" fill="#EFE1C8" />
+          <rect
+            x="90"
+            y="70"
+            width="20"
+            height="45"
+            rx="4"
+            fill="#FBF8F3"
+            stroke="#DCD5BE"
+            stroke-width="1"
+          />
+          <ellipse cx="100" cy="70" rx="10" ry="4" fill="#F6F3EC" />
+          <path
+            id="heroFlame"
+            class="hero-flame"
+            d="M100 62 Q96 52 100 44 Q104 52 100 62 Z"
+            fill="#F0985C"
+          />
+          <path
+            class="hero-flame-inner"
+            d="M100 58 Q98 52 100 47 Q102 52 100 58 Z"
+            fill="#FAD7A0"
+          />
         </svg>
       </div>
       <h1>A lasting tribute,<br />one scan away</h1>
@@ -57,13 +106,25 @@
         <a href="mailto:youremail@example.com" class="cir-btn">
           Get in touch
           <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
-            <path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M4 12L12 4M12 4H5M12 4V11"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </a>
         <a href="/register" class="cir-btn cir-btn--secondary">
           Request Admin Access
           <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
-            <path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M4 12L12 4M12 4H5M12 4V11"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </a>
       </div>
@@ -78,21 +139,30 @@
           <span class="sequence-number">01</span>
           <div>
             <h3>Write their story</h3>
-            <p>Share their life, in your own words, kept safe and private until you're ready to publish.</p>
+            <p>
+              Share their life, in your own words, kept safe and private until
+              you're ready to publish.
+            </p>
           </div>
         </li>
         <li class="sequence-item">
           <span class="sequence-number">02</span>
           <div>
             <h3>Publish when ready</h3>
-            <p>You control when the memorial goes public — no rush, no pressure, no automation deciding for you.</p>
+            <p>
+              You control when the memorial goes public — no rush, no pressure,
+              no automation deciding for you.
+            </p>
           </div>
         </li>
         <li class="sequence-item">
           <span class="sequence-number">03</span>
           <div>
             <h3>Scan to remember</h3>
-            <p>Get a unique QR code linking straight to the tribute — place it at the gravesite for visitors to find.</p>
+            <p>
+              Get a unique QR code linking straight to the tribute — place it at
+              the gravesite for visitors to find.
+            </p>
           </div>
         </li>
       </ol>
@@ -104,19 +174,42 @@
 
       <div class="landing-preview">
         <div class="landing-preview-frame">
-          <svg width="28" height="28" viewBox="0 0 28 28" style="margin-bottom: 10px">
-            <path d="M14 24 L14 12 Q14 6 20 5 Q16 10 17 16 Q18 20 14 24 Z" fill="#3E5C4C" />
-          </svg>
+          <img
+            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop"
+            alt=""
+            class="preview-photo"
+          />
           <div class="memorial-eyebrow">In loving memory of</div>
-          <h3 style="font-size: 24px; margin-bottom: 4px">Juan Dela Cruz</h3>
-          <p style="color: #6b7563; font-size: 13px; font-style: italic; margin-bottom: 16px">
+          <h3 style="font-size: 22px; margin-bottom: 4px">Juan Dela Cruz</h3>
+          <p
+            style="
+              color: #6b7563;
+              font-size: 13px;
+              font-style: italic;
+              margin-bottom: 16px;
+            "
+          >
             1958 &mdash; 2024
           </p>
           <hr class="memorial-divider" style="margin-bottom: 16px" />
-          <p style="color: #5c6b60; font-size: 14px; text-align: left">
+
+          <button class="preview-candle-btn" disabled>🕯 42 candles lit</button>
+
+          <p
+            style="
+              color: #5c6b60;
+              font-size: 14px;
+              text-align: left;
+              margin-top: 18px;
+            "
+          >
             He loved quiet mornings, his garden, and the sound of rain on the
             roof. A devoted father and friend to many...
           </p>
+
+          <div class="preview-gallery">
+            <span></span><span></span><span></span><span></span>
+          </div>
         </div>
       </div>
     </section>
@@ -128,15 +221,24 @@
       <dl class="definition-list">
         <div class="definition-row">
           <dt>No login for visitors</dt>
-          <dd>Anyone can view a published memorial instantly — no account, no app, just a scan.</dd>
+          <dd>
+            Anyone can view a published memorial instantly — no account, no app,
+            just a scan.
+          </dd>
         </div>
         <div class="definition-row">
           <dt>You stay in control</dt>
-          <dd>Only approved admins can create or edit a memorial. Content stays private until published.</dd>
+          <dd>
+            Only approved admins can create or edit a memorial. Content stays
+            private until published.
+          </dd>
         </div>
         <div class="definition-row">
           <dt>A permanent link</dt>
-          <dd>One QR code, one lasting page — a quiet place to return to, whenever you need to.</dd>
+          <dd>
+            One QR code, one lasting page — a quiet place to return to, whenever
+            you need to.
+          </dd>
         </div>
       </dl>
     </section>
@@ -145,7 +247,9 @@
       <p>MournHub &mdash; a space to remember.</p>
     </footer>
 
-    <button id="backToTop" class="back-to-top" aria-label="Back to top">↑</button>
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+      ↑
+    </button>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -163,7 +267,8 @@
         const progressBar = document.getElementById("scrollProgress");
         window.addEventListener("scroll", () => {
           const scrollTop = window.scrollY;
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const docHeight =
+            document.documentElement.scrollHeight - window.innerHeight;
           const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
           progressBar.style.width = percent + "%";
         });
@@ -198,6 +303,28 @@
         // The one deliberate motion moment: hero flame flickers to life on load
         const flame = document.getElementById("heroFlame");
         setTimeout(() => flame.classList.add("is-lit"), 400);
+
+        // Slide-in reveal for sequence items + definition rows. threshold:0.1
+        // and a negative bottom rootMargin mean a tile starts sliding while
+        // it's still mostly below the fold, so the full motion is visible
+        // instead of only its last 20%. The class is added AND removed here
+        // (no unobserve), so scrolling a tile back out of view resets it to
+        // hidden/offset, ready to slide in again next time it's seen.
+        const slideObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("in-view");
+              } else {
+                entry.target.classList.remove("in-view");
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: "0px 0px -60px 0px" },
+        );
+        document
+          .querySelectorAll(".sequence-item, .definition-row")
+          .forEach((el) => slideObserver.observe(el));
       });
     </script>
   </body>

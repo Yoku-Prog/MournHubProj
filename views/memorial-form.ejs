@@ -16,6 +16,24 @@
         <p class="error"><%= error %></p>
       <% } %>
 
+      <% if (memorial && memorial.photos && memorial.photos.length > 0) { %>
+        <label>Current Gallery Photos:</label>
+        <div class="gallery-preview-grid">
+          <% memorial.photos.forEach(photo => { %>
+            <div class="gallery-preview-item">
+              <img src="<%= photo.url %>" alt="Gallery photo">
+              <form action="/memorials/<%= memorial._id %>/photos/<%= photo._id %>/delete" method="POST" class="gallery-remove-form" onsubmit="return confirm('Remove this photo?');">
+                <button type="submit" class="gallery-remove-btn">✕</button>
+              </form>
+              <form action="/memorials/<%= memorial._id %>/photos/<%= photo._id %>/caption" method="POST" class="gallery-caption-form">
+                <input type="text" name="caption" value="<%= photo.caption || '' %>" placeholder="Add a caption" maxlength="200">
+                <button type="submit">Save</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+
       <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
         <label>Full Name:</label>
         <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required>
@@ -29,19 +47,7 @@
         <% } %>
         <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
 
-        <label>Additional Gallery Photos (optional, up to 10):</label>
-        <% if (memorial && memorial.photos && memorial.photos.length > 0) { %>
-          <div class="gallery-preview-grid">
-            <% memorial.photos.forEach(photo => { %>
-              <div class="gallery-preview-item">
-                <img src="<%= photo %>" alt="Gallery photo">
-                <form action="/memorials/<%= memorial._id %>/photos/<%= encodeURIComponent(photo) %>/delete" method="POST" onsubmit="return confirm('Remove this photo?');">
-                  <button type="submit" class="gallery-remove-btn">✕</button>
-                </form>
-              </div>
-            <% }) %>
-          </div>
-        <% } %>
+        <label>Add Gallery Photos (optional, up to 10):</label>
         <input type="file" name="galleryPhotos" accept="image/jpeg,image/png,image/webp" multiple>
 
         <label>Birth Date:</label>

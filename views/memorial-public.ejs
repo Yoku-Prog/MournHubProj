@@ -64,15 +64,14 @@
     </div>
     <p class="memorial-story"><%= memorial.lifeStory %></p>
     <% if (memorial.photos && memorial.photos.length > 0) { %>
-      <div class="memorial-gallery">
-        <% memorial.photos.forEach((photo, index) => { %>
-          <img src="<%= photo %>" alt="Photo of <%= memorial.fullName %>" class="gallery-thumb" loading="lazy" onclick="openLightbox('<%= photo %>')">
-        <% }) %>
+      <div class="memorial-gallery-preview">
+        <div class="gallery-track">
+          <% memorial.photos.concat(memorial.photos).forEach(photo => { %>
+            <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>" class="gallery-track-thumb" loading="lazy">
+          <% }) %>
+        </div>
       </div>
-
-      <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-        <img id="lightboxImg" src="" alt="Enlarged photo">
-      </div>
+      <a href="/memorial/<%= memorial.slug %>/gallery" class="view-all-photos-link">View all photos →</a>
     <% } %>
     <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
   </div>
@@ -163,13 +162,7 @@ guestbookForm.addEventListener('submit', async (e) => {
     guestbookSubmit.disabled = false;
   }
 });
-function openLightbox(src) {
-  document.getElementById('lightboxImg').src = src;
-  document.getElementById('lightbox').classList.add('is-open');
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('is-open');
-}
+  
   </script>
 </body>
 </html>

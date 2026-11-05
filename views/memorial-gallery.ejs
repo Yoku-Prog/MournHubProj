@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= memorial.fullName %> - Photos - MournHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a href="/memorial/<%= memorial.slug %>" class="gallery-close-btn" aria-label="Back to memorial">✕</a>
+
+  <div class="gallery-page">
+    <div class="gallery-page-header">
+      <div class="memorial-eyebrow">Photos of</div>
+      <h1><%= memorial.fullName %></h1>
+    </div>
+
+    <div class="gallery-grid">
+      <% memorial.photos.forEach(photo => { %>
+        <figure class="gallery-grid-item">
+          <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>" loading="lazy">
+          <% if (photo.caption) { %>
+            <figcaption><%= photo.caption %></figcaption>
+          <% } %>
+        </figure>
+      <% }) %>
+    </div>
+  </div>
+</body>
+</html>

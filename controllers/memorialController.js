@@ -13,7 +13,7 @@ cloudinary.config({
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ["image/jpeg", "image/png", "image/webp"];
     if (allowed.includes(file.mimetype)) {
@@ -29,7 +29,6 @@ exports.uploadPhoto = upload.fields([
   { name: "galleryPhotos", maxCount: 10 },
 ]);
 
-// Helper: upload a buffer to Cloudinary and return the resulting URL
 function uploadToCloudinary(buffer) {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -49,7 +48,6 @@ function uploadToCloudinary(buffer) {
   });
 }
 
-// Helper: generate a unique, URL-safe slug from the person's name
 function generateSlug(fullName) {
   const base = fullName
     .toLowerCase()
@@ -61,7 +59,6 @@ function generateSlug(fullName) {
   return `${base}-${randomSuffix}`;
 }
 
-// Show all memorials created by the logged-in admin
 exports.listMemorials = async (req, res) => {
   try {
     const memorials = await Memorial.find({
@@ -91,12 +88,10 @@ exports.listMemorials = async (req, res) => {
   }
 };
 
-// Show the "create new memorial" form
 exports.getCreateForm = (req, res) => {
   res.render("memorial-form", { memorial: null, error: null });
 };
 
-// Handle creating a new memorial
 exports.createMemorial = async (req, res) => {
   try {
     const { fullName, birthDate, deathDate, lifeStory } = req.body;
@@ -117,9 +112,10 @@ exports.createMemorial = async (req, res) => {
 
     let photos = [];
     if (req.files && req.files.galleryPhotos) {
-      photos = await Promise.all(
+      const urls = await Promise.all(
         req.files.galleryPhotos.map((file) => uploadToCloudinary(file.buffer)),
       );
+      photos = urls.map((url) => ({ url, caption: "" }));
     }
 
     const newMemorial = new Memorial({
@@ -144,7 +140,6 @@ exports.createMemorial = async (req, res) => {
   }
 };
 
-// Show the edit form for a specific memorial
 exports.getEditForm = async (req, res) => {
   try {
     const memorial = await Memorial.findOne({
@@ -161,7 +156,6 @@ exports.getEditForm = async (req, res) => {
   }
 };
 
-// Handle updating an existing memorial
 exports.updateMemorial = async (req, res) => {
   try {
     const { fullName, birthDate, deathDate, lifeStory } = req.body;
@@ -184,9 +178,10 @@ exports.updateMemorial = async (req, res) => {
     }
 
     if (req.files && req.files.galleryPhotos) {
-      const newPhotos = await Promise.all(
+      const urls = await Promise.all(
         req.files.galleryPhotos.map((file) => uploadToCloudinary(file.buffer)),
       );
+      const newPhotos = urls.map((url) => ({ url, caption: "" }));
       memorial.photos = [...(memorial.photos || []), ...newPhotos];
     }
 
@@ -198,7 +193,6 @@ exports.updateMemorial = async (req, res) => {
   }
 };
 
-// Toggle publish/unpublish
 exports.togglePublish = async (req, res) => {
   try {
     const memorial = await Memorial.findOne({
@@ -218,7 +212,6 @@ exports.togglePublish = async (req, res) => {
   }
 };
 
-// Delete a memorial
 exports.deleteMemorial = async (req, res) => {
   try {
     await Memorial.deleteOne({
@@ -232,7 +225,6 @@ exports.deleteMemorial = async (req, res) => {
   }
 };
 
-// Remove a single gallery photo
 exports.deleteGalleryPhoto = async (req, res) => {
   try {
     const memorial = await Memorial.findOne({
@@ -243,8 +235,9 @@ exports.deleteGalleryPhoto = async (req, res) => {
       return res.redirect("/dashboard");
     }
 
-    const photoUrl = decodeURIComponent(req.params.photoUrl);
-    memorial.photos = memorial.photos.filter((p) => p !== photoUrl);
+    memorial.photos = memorial.photos.filter(
+      (p) => p._id.toString() !== req.params.photoId,
+    );
     await memorial.save();
 
     res.redirect("/memorials/" + req.params.id + "/edit");
@@ -254,7 +247,29 @@ exports.deleteGalleryPhoto = async (req, res) => {
   }
 };
 
-// Delete a specific guestbook entry (admin only, owner-checked)
+exports.updatePhotoCaption = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      _id: req.params.id,
+      createdBy: req.session.userId,
+    });
+    if (!memorial) {
+      return res.redirect("/dashboard");
+    }
+
+    const photo = memorial.photos.id(req.params.photoId);
+    if (photo) {
+      photo.caption = (req.body.caption || "").trim();
+    }
+    await memorial.save();
+
+    res.redirect("/memorials/" + req.params.id + "/edit");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/dashboard");
+  }
+};
+
 exports.deleteGuestbookEntry = async (req, res) => {
   try {
     const memorial = await Memorial.findOne({
