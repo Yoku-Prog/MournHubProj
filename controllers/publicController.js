@@ -1,13 +1,37 @@
 const Memorial = require("../models/Memorial");
+const QRCode = require("qrcode");
 const config = require("../config");
 const { renderError } = require("../middleware/errorHandlers");
+
+// The landing page's code is real, and opens the sample memorial further down
+// the page. The page still works without it if generation ever fails.
+exports.viewLanding = async (req, res) => {
+  if (req.session.userId) {
+    return res.redirect("/dashboard");
+  }
+
+  let sampleQr = null;
+  try {
+    sampleQr = await QRCode.toString(`${config.publicBaseUrl(req)}/#sample`, {
+      type: "svg",
+      margin: 0,
+      errorCorrectionLevel: "M",
+      color: { dark: "#2e3b34", light: "#0000" },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
+  res.render("landing", { sampleQr });
+};
 
 function renderMemorialNotFound(res) {
   renderError(
     res,
     404,
     "This memorial isn't available",
-    "It may not be published yet, or the link may have changed. If you scanned a QR code, please check with the family who shared it.",
+    "It may not be published yet, or it may have been taken down for now. If you scanned a QR code, the family or the funeral home or cemetery that placed it can help.",
+    "/#families",
   );
 }
 
@@ -56,6 +80,37 @@ exports.viewGallery = async (req, res) => {
       500,
       "Something went wrong",
       "We couldn't load this gallery. Please try again in a moment.",
+    );
+  }
+};
+
+// One photo in full, on its own page, with a way back to where the visitor was
+exports.viewPhoto = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      slug: req.params.slug,
+      isPublic: true,
+    });
+    const photo = memorial && memorial.photos.id(req.params.photoId);
+
+    if (!photo) {
+      return renderMemorialNotFound(res);
+    }
+
+    const fromGallery = req.query.from === "gallery";
+    res.render("memorial-photo", {
+      memorial,
+      photo,
+      backHref: `/memorial/${memorial.slug}${fromGallery ? "/gallery" : ""}`,
+      backLabel: fromGallery ? "Back to photos" : "Back to memorial",
+    });
+  } catch (err) {
+    console.error(err);
+    renderError(
+      res,
+      500,
+      "Something went wrong",
+      "We couldn't load this photo. Please try again in a moment.",
     );
   }
 };

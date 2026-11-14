@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test --test-force-exit",
     "start": "node server.js",
-    "reset-link": "node scripts/create-reset-link.js"
+    "reset-link": "node scripts/create-reset-link.js",
+    "create-superadmin": "node scripts/create-superadmin.js"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +25,7 @@
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
     "mongodb": "^7.6.0",
-    "mongoose": "^9.9.4",
+    "mongoose": "^9.12.1",
     "multer": "^2.4.0",
     "qrcode": "^1.5.4",
     "slugify": "^1.6.9"

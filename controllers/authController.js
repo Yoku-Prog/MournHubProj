@@ -5,6 +5,18 @@ const config = require("../config");
 const { renderError } = require("../middleware/errorHandlers");
 
 const MIN_PASSWORD_LENGTH = 8;
+// bcrypt only reads the first 72 bytes, so a longer password adds nothing
+const MAX_PASSWORD_LENGTH = 72;
+const MAX_NAME_LENGTH = 80;
+const MAX_EMAIL_LENGTH = 254;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Compared against when an email isn't found, so a missing account takes as
+// long to reject as a wrong password and response times don't reveal which
+// addresses have accounts.
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync("not-a-real-password", 10);
+
+const isString = (value) => typeof value === "string";
 
 // Fresh session ID on login so a pre-login session can't be reused (session fixation)
 function startSession(req, user) {
@@ -20,15 +32,17 @@ function startSession(req, user) {
   });
 }
 
-// The superadmin is whoever registers with SUPERADMIN_EMAIL. Without it, local
-// development falls back to the first account; production never does.
+// Outside production, the superadmin is whoever registers with SUPERADMIN_EMAIL,
+// or the first account without it. Production never grants it here: the
+// address isn't verified, so whoever registered with it first would win.
+// There it comes from `npm run create-superadmin` on the server.
 async function shouldBecomeSuperAdmin(email) {
+  if (config.isProduction) return false;
   const superAdminEmail = process.env.SUPERADMIN_EMAIL;
   if (superAdminEmail) {
     if (email !== superAdminEmail.trim().toLowerCase()) return false;
     return !(await User.exists({ role: "superadmin" }));
   }
-  if (config.isProduction) return false;
   return (await User.countDocuments()) === 0;
 }
 
@@ -38,6 +52,9 @@ function passwordError(password, confirmPassword) {
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
     return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+  }
+  if (Buffer.byteLength(password) > MAX_PASSWORD_LENGTH) {
+    return `Password must be ${MAX_PASSWORD_LENGTH} characters or fewer.`;
   }
   return null;
 }
@@ -52,18 +69,38 @@ exports.postRegister = async (req, res) => {
   try {
     const { name, email, password, confirmPassword } = req.body;
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (
+      ![name, email, password, confirmPassword].every(isString) ||
+      !name.trim() ||
+      !email.trim() ||
+      !password ||
+      !confirmPassword
+    ) {
       return res
         .status(400)
         .render("register", { error: "All fields are required." });
+    }
+
+    if (name.trim().length > MAX_NAME_LENGTH) {
+      return res.status(400).render("register", {
+        error: `Name must be ${MAX_NAME_LENGTH} characters or fewer.`,
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (
+      normalizedEmail.length > MAX_EMAIL_LENGTH ||
+      !EMAIL_PATTERN.test(normalizedEmail)
+    ) {
+      return res
+        .status(400)
+        .render("register", { error: "Please enter a valid email address." });
     }
 
     const invalidPassword = passwordError(password, confirmPassword);
     if (invalidPassword) {
       return res.status(400).render("register", { error: invalidPassword });
     }
-
-    const normalizedEmail = email.trim().toLowerCase();
 
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
@@ -76,7 +113,7 @@ exports.postRegister = async (req, res) => {
     const isSuperAdmin = await shouldBecomeSuperAdmin(normalizedEmail);
 
     const newUser = new User({
-      name,
+      name: name.trim(),
       email: normalizedEmail,
       password: hashedPassword,
       isApproved: isSuperAdmin,
@@ -93,9 +130,16 @@ exports.postRegister = async (req, res) => {
     res.render("login", {
       error: null,
       notice:
-        "Account created. The superadmin must approve your account before you can log in.",
+        "Account created. An administrator must approve your account before you can log in.",
     });
   } catch (err) {
+    // Two registrations for one email at the same moment: the unique index
+    // rejects the second, which gets the same answer as any taken address.
+    if (err.code === 11000) {
+      return res.status(400).render("register", {
+        error: "Unable to register with these details.",
+      });
+    }
     console.error(err);
     res.status(500).render("register", {
       error: "Something went wrong. Please try again.",
@@ -113,7 +157,7 @@ exports.postLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (!isString(email) || !isString(password) || !email || !password) {
       return res.status(400).render("login", {
         error: "All fields are required.",
         notice: null,
@@ -121,15 +165,11 @@ exports.postLogin = async (req, res) => {
     }
 
     const user = await User.findOne({ email: email.trim().toLowerCase() });
-    if (!user) {
-      return res.status(401).render("login", {
-        error: "Invalid email or password.",
-        notice: null,
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const isMatch = await bcrypt.compare(
+      password,
+      user ? user.password : DUMMY_PASSWORD_HASH,
+    );
+    if (!user || !isMatch) {
       return res.status(401).render("login", {
         error: "Invalid email or password.",
         notice: null,
@@ -138,7 +178,7 @@ exports.postLogin = async (req, res) => {
 
     if (!user.isApproved) {
       return res.status(403).render("login", {
-        error: "Your account isn't approved. Please contact the superadmin.",
+        error: "Your account isn't approved. Please contact your administrator.",
         notice: null,
       });
     }
@@ -175,7 +215,7 @@ function renderInvalidResetLink(res) {
     res,
     400,
     "This link is no longer valid",
-    "Password reset links expire after 24 hours and can only be used once. Please ask the superadmin for a new one.",
+    "Password reset links expire after 24 hours and can only be used once. Please ask your administrator for a new one.",
   );
 }
 
@@ -196,7 +236,8 @@ exports.postResetPassword = async (req, res) => {
   }
 
   const { password, confirmPassword } = req.body;
-  const invalidPassword = password
+  const invalidPassword =
+    isString(password) && isString(confirmPassword) && password
     ? passwordError(password, confirmPassword)
     : "All fields are required.";
   if (invalidPassword) {

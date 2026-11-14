@@ -29,8 +29,8 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        styleSrc: ["'self'"],
+        fontSrc: ["'self'"],
         imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
         upgradeInsecureRequests: config.isProduction ? [] : null,
       },
@@ -65,14 +65,6 @@ app.use(exposeCsrfToken);
 // Routes
 app.use("/", authRoutes);
 app.use("/", memorialRoutes);
-
-app.get("/", (req, res) => {
-  if (req.session.userId) {
-    return res.redirect("/dashboard");
-  }
-  res.render("landing");
-});
-
 app.use("/", publicRoutes);
 
 app.use(notFound);

@@ -2,14 +2,18 @@ const config = require("./config");
 const mongoose = require("mongoose");
 const connectDB = require("./config/db");
 const app = require("./app");
+const User = require("./models/User");
 
 // Connect to MongoDB and start server
 connectDB()
   .then(() => {
     console.log("MongoDB connected");
-    if (config.isProduction && !process.env.SUPERADMIN_EMAIL) {
+    return config.isProduction ? User.exists({ role: "superadmin" }) : true;
+  })
+  .then((hasSuperAdmin) => {
+    if (!hasSuperAdmin) {
       console.warn(
-        "SUPERADMIN_EMAIL is not set: new registrations can't become superadmin.",
+        'No superadmin yet. Create one with: npm run create-superadmin -- you@example.com "Your Name"',
       );
     }
     app.listen(config.port, () => {

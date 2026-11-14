@@ -137,6 +137,51 @@ test("registering with SUPERADMIN_EMAIL creates the superadmin", async () => {
   assert.equal(owner.isApproved, true);
 });
 
+test("registration rejects invalid emails and overlong input", async () => {
+  const register = async (fields) => {
+    const agent = request.agent(app);
+    const page = await agent.get("/register");
+    return agent.post("/register").type("form").send({
+      _csrf: tokenFrom(page.text),
+      name: "Someone",
+      email: "someone@example.com",
+      password: PASSWORD,
+      confirmPassword: PASSWORD,
+      ...fields,
+    });
+  };
+
+  assert.equal((await register({ email: "not-an-email" })).status, 400);
+  assert.equal((await register({ name: "x".repeat(81) })).status, 400);
+  const longPassword = "p".repeat(73);
+  assert.equal(
+    (await register({ password: longPassword, confirmPassword: longPassword })).status,
+    400,
+  );
+  assert.equal(await User.countDocuments(), 0);
+});
+
+test("the create-superadmin script makes one superadmin with a reset link", async () => {
+  const { createSuperAdmin } = require("../scripts/create-superadmin");
+  const token = await createSuperAdmin(" Boss@Example.com ", "Boss");
+  const boss = await User.findOne({ email: "boss@example.com" });
+  assert.equal(boss.role, "superadmin");
+  assert.equal(boss.isApproved, true);
+  assert.equal((await request(app).get(`/reset-password/${token}`)).status, 200);
+
+  await assert.rejects(createSuperAdmin("second@example.com", "Second"), /already exists/);
+});
+
+test("a missing account is rejected the same way as a wrong password", async () => {
+  const user = await createUser();
+  const missing = await login({ email: "nobody@example.com" });
+  const wrong = await login(user, "wrong-password");
+  assert.equal(missing.res.status, 401);
+  assert.equal(wrong.res.status, 401);
+  const withoutToken = (html) => html.replace(/name="_csrf" value="[^"]+"/, "");
+  assert.equal(withoutToken(missing.res.text), withoutToken(wrong.res.text));
+});
+
 test("pending accounts can't log in", async () => {
   const user = await createUser({ isApproved: false });
   const { res } = await login(user);
@@ -324,6 +369,18 @@ test("a failed create keeps what was typed and stays on the create form", async 
   assert.match(res.text, /Create New Memorial/);
   assert.match(res.text, /value="Maria Santos"/);
   assert.match(res.text, /value="1950-03-14"/);
+  assert.equal(await Memorial.countDocuments(), 0);
+});
+
+test("an overlong life story is rejected", async () => {
+  const { agent, token } = await loggedIn();
+  const res = await agent
+    .post("/memorials/new")
+    .field("_csrf", token)
+    .field("fullName", "Maria Santos")
+    .field("lifeStory", "x".repeat(20001));
+  assert.equal(res.status, 400);
+  assert.match(res.text, /20,000 characters or fewer/);
   assert.equal(await Memorial.countDocuments(), 0);
 });
 
@@ -582,19 +639,40 @@ test("candles count up and only work on published memorials", async () => {
 
   const res = await request(app)
     .post(`/memorial/${published.slug}/light-candle`)
-    .set("X-Forwarded-For", uniqueIp());
+    .set("X-Forwarded-For", uniqueIp())
+    .send({});
   assert.deepEqual(res.body, { candleCount: 1 });
 
   const missing = await request(app)
     .post(`/memorial/${draft.slug}/light-candle`)
-    .set("X-Forwarded-For", uniqueIp());
+    .set("X-Forwarded-For", uniqueIp())
+    .send({});
   assert.equal(missing.status, 404);
+});
+
+test("other sites' forms can't post guestbook entries or light candles", async () => {
+  const user = await createUser();
+  const memorial = await createMemorial(user, { isPublic: true });
+  const formPost = (action, body) =>
+    request(app)
+      .post(`/memorial/${memorial.slug}/${action}`)
+      .set("X-Forwarded-For", uniqueIp())
+      .type("form")
+      .send(body);
+
+  assert.equal((await formPost("guestbook", { name: "Spam", message: "Buy now" })).status, 415);
+  assert.equal((await formPost("light-candle", {})).status, 415);
+
+  const saved = await Memorial.findById(memorial._id);
+  assert.equal(saved.guestbookEntries.length, 0);
+  assert.equal(saved.candleCount, 0);
 });
 
 test("security headers are set and scripts are same-origin only", async () => {
   const res = await request(app).get("/");
   assert.equal(res.status, 200);
   assert.match(res.headers["content-security-policy"], /script-src 'self'/);
+  assert.doesNotMatch(res.headers["content-security-policy"], /unsafe-inline/);
   assert.equal(res.headers["x-content-type-options"], "nosniff");
   assert.ok(!/<script>/.test(res.text), "landing page has no inline scripts");
 });
@@ -606,6 +684,34 @@ test("landing page has no placeholder contact details or stock photos", async ()
   assert.match(text, /href="\/login"/);
 });
 
+test("landing page has a real code for the sample and states it isn't a real person", async () => {
+  const QRCode = require("qrcode");
+  const original = QRCode.toString;
+  let encoded;
+  QRCode.toString = async (text, opts) => {
+    encoded = text;
+    return original(text, opts);
+  };
+  const { text } = await request(app).get("/");
+  QRCode.toString = original;
+
+  assert.equal(encoded, "https://memorials.test/#sample");
+  assert.match(text, /<svg[^>]*viewBox/);
+  assert.match(text, /id="sample"/);
+  assert.match(text, /isn't a real person/);
+});
+
+test("the landing page's main action falls back to registering without a contact email", async () => {
+  const { text } = await request(app).get("/");
+  assert.ok(!text.includes("mailto:"));
+  assert.match(text, /href="\/register" class="gilded"/);
+});
+
+test("logged-in users skip the landing page", async () => {
+  const { agent } = await loggedIn();
+  assert.equal((await agent.get("/")).headers.location, "/dashboard");
+});
+
 test("no view uses inline event handlers, which the CSP would block", () => {
   const fs = require("fs");
   const path = require("path");
@@ -613,5 +719,37 @@ test("no view uses inline event handlers, which the CSP would block", () => {
   for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".ejs"))) {
     const html = fs.readFileSync(path.join(dir, file), "utf8");
     assert.ok(!/\son[a-z]+="/.test(html), `${file} has an inline handler`);
+    assert.ok(!/\sstyle="/.test(html), `${file} has an inline style`);
   }
+});
+
+test("a gallery photo opens on its own page with a way back", async () => {
+  const user = await User.create({
+    name: "Photo Owner",
+    email: "photo-owner@example.com",
+    password: "x",
+    isApproved: true,
+  });
+  const memorial = await Memorial.create({
+    fullName: "Photo Page",
+    lifeStory: "Story",
+    slug: "photo-page-test",
+    isPublic: true,
+    createdBy: user._id,
+    photos: [{ url: "https://res.cloudinary.com/demo/image/upload/v1/mournhub/a.jpg" }],
+  });
+  const photoPath = `/memorial/${memorial.slug}/photos/${memorial.photos[0]._id}`;
+
+  const page = await request(app).get(`/memorial/${memorial.slug}`);
+  assert.ok(page.text.includes(`href="${photoPath}"`));
+
+  const fromMemorial = await request(app).get(photoPath);
+  assert.equal(fromMemorial.status, 200);
+  assert.ok(fromMemorial.text.includes(`href="/memorial/${memorial.slug}"`));
+
+  const fromGallery = await request(app).get(`${photoPath}?from=gallery`);
+  assert.ok(fromGallery.text.includes(`href="/memorial/${memorial.slug}/gallery"`));
+
+  const missing = await request(app).get(`/memorial/${memorial.slug}/photos/nope`);
+  assert.equal(missing.status, 404);
 });

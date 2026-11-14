@@ -1,41 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <%- include("partials/head", { title: "Login - MournHub" }) %>
+  <%- include("partials/head", { title: "Log in - MournHub" }) %>
+  <script src="/js/forms.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <div class="hero">
-      <div class="eyebrow">MournHub</div>
-      <h1>Welcome back</h1>
-    </div>
-    <div class="divider"><span>🌿</span></div>
+  <div class="page">
+    <header class="masthead">
+      <a href="/" class="wordmark">MournHub</a>
+    </header>
 
-    <% if (error) { %>
-      <p class="error"><%= error %></p>
-    <% } %>
-    <% if (typeof notice !== 'undefined' && notice) { %>
-      <p class="notice"><%= notice %></p>
-    <% } %>
+    <main class="split">
+      <div class="split-lead">
+        <h1 class="cut page-title">Welcome back</h1>
+      </div>
 
-    <form method="POST" action="/login">
-      <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+      <div class="split-side">
+        <div class="inlay panel">
+          <% if (error) { %>
+            <p class="error"><%= error %></p>
+          <% } %>
+          <% if (typeof notice !== 'undefined' && notice) { %>
+            <p class="notice"><%= notice %></p>
+          <% } %>
 
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          <form method="POST" action="/login">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
 
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
 
-      <button type="submit">Login</button>
-    </form>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
 
-    <p class="auth-footnote">
-      Don't have an account? <a href="/register">Register</a>
-    </p>
-    <p class="auth-footnote auth-footnote--tight">
-      Forgot your password? Ask the superadmin<% if (contactEmail) { %> at <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a><% } %> for a reset link.
-    </p>
+            <button type="submit" class="gilded">Log in</button>
+          </form>
+
+          <p class="footnote">
+            Don't have an account? <a href="/register">Register</a>
+          </p>
+          <p class="footnote">
+            Forgot your password? Ask your administrator<% if (contactEmail) { %> at <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a><% } %> for a reset link.
+          </p>
+        </div>
+      </div>
+    </main>
   </div>
 </body>
 </html>

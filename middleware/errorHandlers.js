@@ -1,5 +1,5 @@
-const renderError = (res, status, title, message) =>
-  res.status(status).render("error", { title, message });
+const renderError = (res, status, title, message, returnHref = "/") =>
+  res.status(status).render("error", { title, message, returnHref });
 
 exports.renderError = renderError;
 

@@ -19,11 +19,15 @@ exports.verifyCsrf = (req, res, next) => {
   const expected = req.session.csrfToken;
   const submitted = req.body && req.body._csrf;
 
+  // Compared as bytes: timingSafeEqual throws when the byte lengths differ,
+  // which a same-length string with non-ASCII characters would cause.
+  const expectedBytes = Buffer.from(typeof expected === "string" ? expected : "");
+  const submittedBytes = Buffer.from(typeof submitted === "string" ? submitted : "");
+
   const isValid =
-    typeof expected === "string" &&
-    typeof submitted === "string" &&
-    expected.length === submitted.length &&
-    crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(submitted));
+    expectedBytes.length > 0 &&
+    expectedBytes.length === submittedBytes.length &&
+    crypto.timingSafeEqual(expectedBytes, submittedBytes);
 
   if (!isValid) {
     return renderError(

@@ -5,13 +5,18 @@
   <meta name="robots" content="noindex">
 </head>
 <body>
-  <div class="container error-page">
-    <div class="hero">
-      <div class="eyebrow">MournHub</div>
-      <h1><%= title %></h1>
-    </div>
-    <p><%= message %></p>
-    <a href="/" class="btn btn-secondary">Return to MournHub</a>
+  <div class="page">
+    <header class="masthead">
+      <a href="/" class="wordmark">MournHub</a>
+    </header>
+
+    <main class="split">
+      <div class="split-lead">
+        <h1 class="cut page-title"><%= title %></h1>
+        <p><%= message %></p>
+        <a href="<%= locals.returnHref || '/' %>" class="gilded">Return to MournHub</a>
+      </div>
+    </main>
   </div>
 </body>
 </html>

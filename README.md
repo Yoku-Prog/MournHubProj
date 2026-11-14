@@ -27,7 +27,11 @@ Tests use a temporary in-memory MongoDB and a fake Cloudinary, so they never tou
 1. Set `NODE_ENV=production` and the variables marked as required in `.env.example`. The app won't start if any are missing.
 2. Set `BASE_URL` to the final HTTPS domain **before printing QR codes**, because each code permanently contains that address.
 3. Run the app behind an HTTPS proxy, which most hosts provide. Session cookies only work over HTTPS in production. Set `TRUST_PROXY` if there's more than one proxy in front of the app.
-4. Set `SUPERADMIN_EMAIL`, then register with that address to create the superadmin account.
+4. Create the superadmin on the server, then open the one-time link it prints to choose a password. The register page never creates a superadmin in production, and `SUPERADMIN_EMAIL` is ignored there.
+
+   ```sh
+   npm run create-superadmin -- you@example.com "Your Name"
+   ```
 
 Rate limits are kept in memory, so they reset on restart and aren't shared if you run more than one instance.
 

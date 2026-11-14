@@ -15,6 +15,8 @@ cloudinary.config({
 
 const MAX_GALLERY_UPLOADS = 10;
 const MAX_NAME_LENGTH = 120;
+const MAX_STORY_LENGTH = 20000;
+const MAX_CAPTION_LENGTH = 200;
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -114,6 +116,13 @@ function validateMemorial({ fullName, birthDate, deathDate, lifeStory }) {
   }
   if (fullName.trim().length > MAX_NAME_LENGTH) {
     return `Full name must be ${MAX_NAME_LENGTH} characters or fewer.`;
+  }
+  if (lifeStory.trim().length > MAX_STORY_LENGTH) {
+    return `Life story must be ${MAX_STORY_LENGTH.toLocaleString("en-US")} characters or fewer.`;
+  }
+  const isDate = (value) => value === undefined || typeof value === "string";
+  if (!isDate(birthDate) || !isDate(deathDate)) {
+    return "Please enter valid dates.";
   }
 
   const birth = birthDate ? new Date(birthDate) : null;
@@ -403,9 +412,12 @@ exports.updatePhotoCaption = async (req, res) => {
 
     const photo = memorial.photos.id(req.params.photoId);
     if (photo) {
-      photo.caption = (req.body.caption || "").trim();
+      const { caption } = req.body;
+      photo.caption = (typeof caption === "string" ? caption : "")
+        .trim()
+        .slice(0, MAX_CAPTION_LENGTH);
+      await memorial.save();
     }
-    await memorial.save();
 
     res.redirect("/memorials/" + req.params.id + "/edit");
   } catch (err) {
@@ -421,8 +433,12 @@ exports.deleteGuestbookEntry = async (req, res) => {
       return res.redirect("/dashboard");
     }
 
-    memorial.guestbookEntries.id(req.params.entryId).deleteOne();
-    await memorial.save();
+    // Already gone if the form was submitted twice or from a stale page
+    const entry = memorial.guestbookEntries.id(req.params.entryId);
+    if (entry) {
+      entry.deleteOne();
+      await memorial.save();
+    }
 
     res.redirect("/memorials/" + req.params.id + "/edit");
   } catch (err) {

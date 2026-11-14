@@ -2,39 +2,50 @@
 <html lang="en">
 <head>
   <%- include("partials/head", { title: "Register - MournHub" }) %>
+  <script src="/js/forms.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <div class="hero">
-      <div class="eyebrow">MournHub</div>
-      <h1>Create your account</h1>
-    </div>
+  <div class="page">
+    <header class="masthead">
+      <a href="/" class="wordmark">MournHub</a>
+    </header>
 
-    <% if (error) { %>
-      <p class="error"><%= error %></p>
-    <% } %>
+    <main class="split">
+      <div class="split-lead">
+        <h1 class="cut page-title">Create your account</h1>
+        <p>An administrator reviews each new account. You'll be able to log in once yours is approved.</p>
+      </div>
 
-    <form method="POST" action="/register">
-      <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+      <div class="split-side">
+        <div class="inlay panel">
+          <% if (error) { %>
+            <p class="error"><%= error %></p>
+          <% } %>
 
-      <label for="name">Full name</label>
-      <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" autocomplete="name" required>
+          <form method="POST" action="/register">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
 
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            <label for="name">Full name</label>
+            <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" autocomplete="name" required>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" autocomplete="new-password" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
 
-      <label for="confirmPassword">Confirm password</label>
-      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" minlength="8" autocomplete="new-password" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="At least 8 characters" minlength="8" autocomplete="new-password" required>
 
-      <button type="submit">Register</button>
-    </form>
+            <label for="confirmPassword">Confirm password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" minlength="8" autocomplete="new-password" required>
 
-    <p class="auth-footnote">
-      Already have an account? <a href="/login">Login</a>
-    </p>
+            <button type="submit" class="gilded">Register</button>
+          </form>
+
+          <p class="footnote">
+            Already have an account? <a href="/login">Log in</a>
+          </p>
+        </div>
+      </div>
+    </main>
   </div>
 </body>
 </html>

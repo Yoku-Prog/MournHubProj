@@ -1,256 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <%- include("partials/head", { title: "MournHub - Honor a life, always within reach" }) %>
-    <meta name="description" content="Create a lasting online memorial for a loved one, and let visitors reach it with a simple QR code." />
-    <meta property="og:title" content="MournHub - A lasting tribute, one scan away" />
-    <meta property="og:description" content="Create a lasting online memorial for a loved one, and let visitors reach it with a simple QR code." />
-    <script src="/js/landing.js" defer></script>
-  </head>
-  <body class="landing-page">
-    <div class="scroll-progress-bar" id="scrollProgress"></div>
+<head>
+  <meta charset="utf-8">
+  <title>MournHub - Memorials for the place of rest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MournHub helps funeral and cemetery teams give each family an online memorial, opened by one QR code at the place of rest.">
+  <meta name="theme-color" content="#f6f3ec">
+  <meta property="og:title" content="MournHub - Memorials for the place of rest">
+  <meta property="og:description" content="Online memorials from funeral and cemetery teams, opened by one QR code at the place of rest.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/stone.css">
+  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/motion.css">
+  <script src="/js/motion.js" defer></script>
+  <script src="/js/landing.js" defer></script>
+</head>
+<body>
+  <div id="candleGlowOverlay" class="candle-glow-overlay"></div>
 
-    <nav class="landing-nav" id="landingNav">
-      <div class="landing-nav-brand">MournHub</div>
+  <% const contactHref = contactEmail ? "mailto:" + contactEmail + "?subject=" + encodeURIComponent("MournHub for our organization") : null; %>
 
-      <button class="landing-nav-toggle" id="navToggle" aria-label="Open menu">
-        <span></span><span></span><span></span>
-      </button>
-
-      <div class="landing-nav-links" id="navLinks">
-        <a href="#how-it-works">How it works</a>
-        <a href="#preview">Preview</a>
-        <a href="#why">Why MournHub</a>
-        <% if (contactEmail) { %>
-        <a href="mailto:<%= contactEmail %>">Contact</a>
-        <% } %>
+  <div class="sheet">
+    <header class="masthead">
+      <a href="/" class="wordmark">MournHub</a>
+      <nav aria-label="Main">
+        <a href="#how-it-works" class="nav-section">How it works</a>
+        <a href="#sample" class="nav-section">Sample memorial</a>
+        <a href="#families">For families</a>
         <a href="/login">Log in</a>
-      </div>
-    </nav>
+      </nav>
+    </header>
 
-    <!-- Hero -->
-    <section class="landing-section landing-hero">
-      <div class="landing-hero-art">
-        <svg
-          viewBox="0 0 200 140"
-          width="180"
-          height="126"
-          role="img"
-          aria-label="A candle glowing between two drooping leaves"
-        >
-          <ellipse
-            cx="100"
-            cy="128"
-            rx="70"
-            ry="6"
-            fill="#DCD5BE"
-            opacity="0.5"
-          />
+    <main>
+      <section class="opening">
+        <div class="opening-words">
+          <h1>A memorial for the place they rest</h1>
+          <p class="lede">MournHub helps funeral and cemetery teams give each family an online memorial, opened by one QR code at the place of rest. Visitors don't need an app or an account.</p>
+          <div class="actions">
+            <% if (contactHref) { %>
+              <a href="<%= contactHref %>" class="gilded">Talk to us</a>
+              <a href="/register">Request an account</a>
+            <% } else { %>
+              <a href="/register" class="gilded">Request an account</a>
+            <% } %>
+          </div>
+        </div>
 
-          <!-- Left leaf, drooping outward and down -->
-          <path
-            d="M85 128 C85 100 83 75 75 58 C69 46 55 38 35 40 C53 46 65 60 68 82 C70 100 76 118 85 128 Z"
-            fill="#3E5C4C"
-          />
-          <path
-            d="M75 58 C69 46 55 38 35 40"
-            fill="none"
-            stroke="#2E3B34"
-            stroke-width="1"
-          />
+        <figure class="marker-scene">
+          <div class="marker">
+            <div class="marker-stone">
+              <p class="marker-intro">In loving memory of</p>
+              <p class="marker-name">Maria Santos</p>
+              <p class="marker-dates">1950 &ndash; 2020</p>
+              <% if (sampleQr) { %>
+                <div class="marker-plate" role="img" aria-label="QR code that opens the sample memorial on this page"><%- sampleQr %></div>
+              <% } %>
+            </div>
+            <div class="marker-base"></div>
+            <svg class="marker-candle" viewBox="0 0 24 44" width="30" height="55" aria-hidden="true">
+              <rect x="7" y="18" width="10" height="24" rx="1.5" fill="#fbfaf6" stroke="#7c8b7f"/>
+              <line x1="12" y1="18" x2="12" y2="13" stroke="#2e3b34" stroke-width="1.2"/>
+              <path class="marker-flame" d="M12 14 Q6.5 8 12 0 Q17.5 8 12 14 Z" fill="#d4af58"/>
+            </svg>
+          </div>
+          <figcaption>A sample marker. Scan the plate to open Maria's memorial, or <a href="#sample">see it on this page</a>.</figcaption>
+        </figure>
+      </section>
 
-          <!-- Right leaf, mirrored -->
-          <path
-            d="M115 128 C115 100 117 75 125 58 C131 46 145 38 165 40 C147 46 135 60 132 82 C130 100 124 118 115 128 Z"
-            fill="#3E5C4C"
-          />
-          <path
-            d="M125 58 C131 46 145 38 165 40"
-            fill="none"
-            stroke="#2E3B34"
-            stroke-width="1"
-          />
+      <section class="programme" id="how-it-works">
+        <h2>From first draft to the marker</h2>
+        <ol>
+          <li>
+            <h3>Write</h3>
+            <p>Add the name, dates, life story and photos with the family. The memorial stays private while you work.</p>
+          </li>
+          <li>
+            <h3>Publish</h3>
+            <p>You publish it when the family is ready. Nothing goes live on its own, and you can unpublish it at any time.</p>
+          </li>
+          <li>
+            <h3>Place</h3>
+            <p>Download a high-resolution QR code for your plaque or marker. Editing the memorial later doesn't change its link, so a placed code keeps working.</p>
+          </li>
+        </ol>
+      </section>
 
-          <!-- Candle, centered -->
-          <ellipse cx="100" cy="115" rx="16" ry="8" fill="#EFE1C8" />
-          <rect
-            x="90"
-            y="70"
-            width="20"
-            height="45"
-            rx="4"
-            fill="#FBF8F3"
-            stroke="#DCD5BE"
-            stroke-width="1"
-          />
-          <ellipse cx="100" cy="70" rx="10" ry="4" fill="#F6F3EC" />
-          <path
-            id="heroFlame"
-            class="hero-flame"
-            d="M100 62 Q96 52 100 44 Q104 52 100 62 Z"
-            fill="#F0985C"
-          />
-          <path
-            class="hero-flame-inner"
-            d="M100 58 Q98 52 100 47 Q102 52 100 58 Z"
-            fill="#FAD7A0"
-          />
-        </svg>
-      </div>
-      <h1>A lasting tribute,<br />one scan away</h1>
-      <p class="landing-subtext">
-        Create a lasting online memorial for a loved one, and let visitors reach
-        it with a simple QR code — right at the place they're laid to rest.
-      </p>
-      <div class="landing-cta">
-        <% if (contactEmail) { %>
-        <a href="mailto:<%= contactEmail %>" class="cir-btn">
-          Get in touch
-          <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M4 12L12 4M12 4H5M12 4V11"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </a>
+      <section class="sample" id="sample">
+        <h2>What a visitor sees</h2>
+        <p class="section-lede">One scan opens the page on their phone, with nothing to install and nothing to sign up for.</p>
+
+        <article class="memorial-sample" aria-label="Sample memorial">
+          <p class="sample-label">Sample memorial. Maria Santos isn't a real person, so it has no real photos.</p>
+          <div class="sample-photo" aria-hidden="true">MS</div>
+          <p class="sample-intro">In loving memory of</p>
+          <h3>Maria Santos</h3>
+          <p class="sample-dates">March 14, 1950 &ndash; January 2, 2020</p>
+          <button type="button" class="sample-candle" id="sampleCandle">
+            <svg viewBox="0 0 24 30" width="30" height="38" aria-hidden="true" class="sample-candle-icon">
+              <rect x="8" y="16" width="8" height="12" rx="1" fill="#ffffff" stroke="#5c6b60" stroke-width="1"/>
+              <line x1="12" y1="16" x2="12" y2="10" stroke="#2e3b34" stroke-width="1.5" stroke-linecap="round"/>
+              <g class="flame-group">
+                <path class="flame-outer" d="M12 10 Q7 4 12 -3 Q17 4 12 10 Z" fill="#c98a2b"/>
+                <path class="flame-inner" d="M12 8.5 Q9.5 4.5 12 0 Q14.5 4.5 12 8.5 Z" fill="#f0c060"/>
+              </g>
+            </svg>
+            <span id="sampleCandleLabel">Light a candle</span>
+          </button>
+          <p class="sample-count" aria-live="polite"><span id="sampleCandleCount">12</span> candles lit in remembrance</p>
+          <p class="sample-story">Maria taught at the village school for thirty-one years and could still name every child she taught. She kept bees, grew more tomatoes than anyone could eat, and left a bag on every doorstep in August.</p>
+          <blockquote>
+            <p>She taught me to read, and years later she taught my son.</p>
+            <footer>Tomas, June 3, 2024</footer>
+          </blockquote>
+        </article>
+      </section>
+
+      <section class="programme care">
+        <h2>You stay in charge</h2>
+        <dl>
+          <div>
+            <dt>Approved accounts only</dt>
+            <dd>Each staff account is approved before it can create a memorial, and access can be revoked at any time.</dd>
+          </div>
+          <div>
+            <dt>Private until published</dt>
+            <dd>Each memorial belongs to the account that created it, and nobody else can see its draft.</dd>
+          </div>
+          <div>
+            <dt>Messages you can remove</dt>
+            <dd>Visitors can leave a memory, and you can remove any message.</dd>
+          </div>
+          <div>
+            <dt>Out of search results</dt>
+            <dd>Published memorials ask search engines not to list them, so people reach them by code or by link.</dd>
+          </div>
+          <div>
+            <dt>Photos you can remove</dt>
+            <dd>Deleting a photo or a memorial takes it down at once and requests removal of its images from storage.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="families" id="families">
+        <h2>If you're here for a family member</h2>
+        <p>There's nothing you need to set up. Your funeral home or cemetery can create a memorial with you, so you can ask them whether they use MournHub.</p>
+        <% if (contactHref) { %>
+          <p>If you have a question about a memorial, you're welcome to <a href="mailto:<%= contactEmail %>">write to us</a>.</p>
         <% } %>
-        <a href="/register" class="cir-btn cir-btn--secondary">
-          Request Admin Access
-          <svg class="cir-btn__arrow" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M4 12L12 4M12 4H5M12 4V11"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </a>
-      </div>
-    </section>
+      </section>
 
-    <!-- How it works: a real sequence, treated as one -->
-    <section class="landing-section landing-sequence" id="how-it-works">
-      <h2>From story to tribute, in three steps</h2>
-
-      <ol class="sequence-list">
-        <li class="sequence-item">
-          <span class="sequence-number">01</span>
-          <div>
-            <h3>Write their story</h3>
-            <p>
-              Share their life, in your own words, kept safe and private until
-              you're ready to publish.
-            </p>
-          </div>
-        </li>
-        <li class="sequence-item">
-          <span class="sequence-number">02</span>
-          <div>
-            <h3>Publish when ready</h3>
-            <p>
-              You control when the memorial goes public — no rush, no pressure,
-              no automation deciding for you.
-            </p>
-          </div>
-        </li>
-        <li class="sequence-item">
-          <span class="sequence-number">03</span>
-          <div>
-            <h3>Scan to remember</h3>
-            <p>
-              Get a unique QR code linking straight to the tribute — place it at
-              the gravesite for visitors to find.
-            </p>
-          </div>
-        </li>
-      </ol>
-    </section>
-
-    <!-- Preview mockup -->
-    <section class="landing-section" id="preview">
-      <h2 class="landing-center-heading">What visitors see</h2>
-
-      <div class="landing-preview">
-        <div class="landing-preview-frame">
-          <div class="preview-photo preview-photo--initials" aria-hidden="true">
-            JD
-          </div>
-          <div class="memorial-eyebrow">In loving memory of</div>
-          <h3 style="font-size: 22px; margin-bottom: 4px">Juan Dela Cruz</h3>
-          <p
-            style="
-              color: #6b7563;
-              font-size: 13px;
-              font-style: italic;
-              margin-bottom: 16px;
-            "
-          >
-            1958 &mdash; 2024
-          </p>
-          <hr class="memorial-divider" style="margin-bottom: 16px" />
-
-          <button class="preview-candle-btn" disabled>🕯 42 candles lit</button>
-
-          <p
-            style="
-              color: #5c6b60;
-              font-size: 14px;
-              text-align: left;
-              margin-top: 18px;
-            "
-          >
-            He loved quiet mornings, his garden, and the sound of rain on the
-            roof. A devoted father and friend to many...
-          </p>
-
-          <div class="preview-gallery">
-            <span></span><span></span><span></span><span></span>
-          </div>
+      <section class="close">
+        <h2>Tell us about the families you serve</h2>
+        <p>We'll talk through how MournHub could work for your funeral home or cemetery.</p>
+        <div class="actions">
+          <% if (contactHref) { %>
+            <a href="<%= contactHref %>" class="gilded">Talk to us</a>
+            <a href="/register">Request an account</a>
+          <% } else { %>
+            <a href="/register" class="gilded">Request an account</a>
+          <% } %>
         </div>
-      </div>
-    </section>
+        <% if (contactHref) { %>
+          <p class="close-address">Or write to us at <a href="<%= contactHref %>"><%= contactEmail %></a></p>
+        <% } %>
+      </section>
+    </main>
 
-    <!-- Why MournHub: a plain comparison, not identical cards -->
-    <section class="landing-section landing-definitions" id="why">
-      <h2>Built for remembering, not scrolling</h2>
-
-      <dl class="definition-list">
-        <div class="definition-row">
-          <dt>No login for visitors</dt>
-          <dd>
-            Anyone can view a published memorial instantly — no account, no app,
-            just a scan.
-          </dd>
-        </div>
-        <div class="definition-row">
-          <dt>You stay in control</dt>
-          <dd>
-            Only approved admins can create or edit a memorial. Content stays
-            private until published.
-          </dd>
-        </div>
-        <div class="definition-row">
-          <dt>A permanent link</dt>
-          <dd>
-            One QR code, one lasting page — a quiet place to return to, whenever
-            you need to.
-          </dd>
-        </div>
-      </dl>
-    </section>
-
-    <footer class="landing-footer">
-      <p>MournHub &mdash; a space to remember.</p>
-      <p class="landing-footer-admin"><a href="/login">Admin login</a></p>
+    <footer class="colophon">
+      <span>MournHub</span>
+      <a href="/login">Staff log in</a>
     </footer>
-
-    <button id="backToTop" class="back-to-top" aria-label="Back to top">
-      ↑
-    </button>
-
-  </body>
+  </div>
+</body>
 </html>
