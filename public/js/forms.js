@@ -32,3 +32,69 @@ window.addEventListener("pageshow", () => {
     button.disabled = false;
   });
 });
+
+// Photos are made smaller here, before they're sent. The server only keeps
+// them at this size anyway, and some hosts refuse uploads over a few megabytes,
+// which a single phone photo can exceed. If anything fails the original is sent.
+const MAX_PHOTO_EDGE = 1200;
+let shrinking = 0;
+
+async function shrinkPhoto(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_PHOTO_EDGE / Math.max(bitmap.width, bitmap.height));
+  if (scale === 1 && file.size < 300 * 1024) {
+    return file;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const context = canvas.getContext("2d");
+  // JPEG has no transparency, so see-through areas become white, not black
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.82));
+  if (!blob || blob.size >= file.size) {
+    return file;
+  }
+  return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+}
+
+document.addEventListener("change", async (e) => {
+  const input = e.target;
+  if (
+    !input.matches('input[type="file"]') ||
+    input.files.length === 0 ||
+    !window.createImageBitmap ||
+    !window.DataTransfer
+  ) {
+    return;
+  }
+
+  // The form waits, so it can't be sent with the large originals still in it
+  const button = input.form && input.form.querySelector('button[type="submit"]');
+  shrinking += 1;
+  if (button) {
+    button.disabled = true;
+    button.classList.add("is-loading");
+  }
+
+  try {
+    const photos = await Promise.all(
+      [...input.files].map((file) => shrinkPhoto(file).catch(() => file)),
+    );
+    const transfer = new DataTransfer();
+    photos.forEach((photo) => transfer.items.add(photo));
+    input.files = transfer.files;
+  } catch (err) {
+    // The originals stay in place
+  } finally {
+    shrinking -= 1;
+    if (button && shrinking === 0) {
+      button.disabled = false;
+      button.classList.remove("is-loading");
+    }
+  }
+});

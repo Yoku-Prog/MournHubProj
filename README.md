@@ -33,6 +33,10 @@ Tests use a temporary in-memory MongoDB and a fake Cloudinary, so they never tou
    npm run create-superadmin -- you@example.com "Your Name"
    ```
 
+### Vercel
+
+Vercel runs the app with no extra configuration (either `app.js` or `server.js` works as its entry point), and serves `public/` itself. Set the same environment variables in the project's settings, and allow access from anywhere (`0.0.0.0/0`) in MongoDB Atlas, because Vercel has no fixed address. Vercel refuses requests over 4.5 MB, so the memorial form shrinks photos in the browser before sending them.
+
 Rate limits are kept in memory, so they reset on restart and aren't shared if you run more than one instance.
 
 ## Admin accounts
