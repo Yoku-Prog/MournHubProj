@@ -20,7 +20,7 @@
 
     <main class="split split-form">
       <div class="split-lead">
-        <form method="POST" action="<%= isEdit ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data" class="inlay panel" data-saving-label="Saving…">
+        <form method="POST" action="<%= isEdit ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data" class="inlay panel" id="memorialForm" data-saving-label="Saving…">
           <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
 
           <% if (error) { %>
@@ -78,6 +78,7 @@
         <% if (isEdit && memorial.photos && memorial.photos.length > 0) { %>
           <section class="inlay panel">
             <h2 class="panel-title panel-heading">Gallery photos</h2>
+            <p class="gallery-caption-hint">Captions are saved when you choose Save changes.</p>
             <div class="gallery-preview-grid">
               <% memorial.photos.forEach(photo => { %>
                 <div class="gallery-preview-item">
@@ -90,11 +91,10 @@
                       </svg>
                     </button>
                   </form>
-                  <form action="/memorials/<%= memorial._id %>/photos/<%= photo._id %>/caption" method="POST" class="gallery-caption-form">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
-                    <input type="text" name="caption" value="<%= photo.caption || '' %>" placeholder="Add a caption" aria-label="Photo caption" maxlength="200">
-                    <button type="submit">Save</button>
-                  </form>
+                  <%# Belongs to the main form, so one "Save changes" saves every caption %>
+                  <div class="gallery-caption-form">
+                    <input type="text" form="memorialForm" name="captions[<%= photo._id %>]" value="<%= photo.caption || '' %>" placeholder="Add a caption" aria-label="Photo caption" maxlength="200">
+                  </div>
                 </div>
               <% }) %>
             </div>

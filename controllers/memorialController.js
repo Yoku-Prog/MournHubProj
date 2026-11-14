@@ -318,6 +318,17 @@ exports.updateMemorial = async (req, res) => {
     memorial.birthDate = birthDate || null;
     memorial.deathDate = deathDate || null;
     memorial.lifeStory = lifeStory;
+
+    // Captions are sent as captions[<photo id>] alongside the rest of the form
+    const captions = req.body.captions;
+    if (captions && typeof captions === "object") {
+      memorial.photos.forEach((photo) => {
+        const caption = captions[photo._id];
+        if (typeof caption === "string") {
+          photo.caption = caption.trim().slice(0, MAX_CAPTION_LENGTH);
+        }
+      });
+    }
     memorial.photos.push(...galleryPhotos);
 
     const replacedPhotoUrl = photoUrl ? memorial.photoUrl : null;
@@ -394,29 +405,6 @@ exports.deleteGalleryPhoto = async (req, res) => {
       photo.deleteOne();
       await memorial.save();
       await deleteFromCloudinary([url]);
-    }
-
-    res.redirect("/memorials/" + req.params.id + "/edit");
-  } catch (err) {
-    console.error(err);
-    res.redirect("/dashboard");
-  }
-};
-
-exports.updatePhotoCaption = async (req, res) => {
-  try {
-    const memorial = await findOwnedMemorial(req);
-    if (!memorial) {
-      return res.redirect("/dashboard");
-    }
-
-    const photo = memorial.photos.id(req.params.photoId);
-    if (photo) {
-      const { caption } = req.body;
-      photo.caption = (typeof caption === "string" ? caption : "")
-        .trim()
-        .slice(0, MAX_CAPTION_LENGTH);
-      await memorial.save();
     }
 
     res.redirect("/memorials/" + req.params.id + "/edit");

@@ -753,3 +753,26 @@ test("a gallery photo opens on its own page with a way back", async () => {
   const missing = await request(app).get(`/memorial/${memorial.slug}/photos/nope`);
   assert.equal(missing.status, 404);
 });
+
+test("saving a memorial saves its photo captions, which show on the photo page", async () => {
+  const { agent, user, token } = await loggedIn();
+  const memorial = await createMemorial(user, {
+    isPublic: true,
+    photos: [{ url: "https://res.cloudinary.com/test/image/upload/v1/mournhub/g.jpg" }],
+  });
+  const photoId = memorial.photos[0]._id;
+
+  const res = await agent
+    .post(`/memorials/${memorial._id}/edit`)
+    .field("_csrf", token)
+    .field("fullName", "Maria Santos")
+    .field("lifeStory", "She loved her garden.")
+    .field(`captions[${photoId}]`, "  At the beach, 1984  ");
+  assert.equal(res.headers.location, "/dashboard");
+
+  const saved = await Memorial.findById(memorial._id);
+  assert.equal(saved.photos[0].caption, "At the beach, 1984");
+
+  const page = await request(app).get(`/memorial/${saved.slug}/photos/${photoId}`);
+  assert.match(page.text, /<figcaption>At the beach, 1984<\/figcaption>/);
+});

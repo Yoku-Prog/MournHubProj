@@ -45,12 +45,6 @@ router.post(
   verifyCsrf,
   memorialController.deleteGalleryPhoto,
 );
-router.post(
-  "/memorials/:id/photos/:photoId/caption",
-  requireAuth,
-  verifyCsrf,
-  memorialController.updatePhotoCaption,
-);
 
 router.post(
   "/memorials/:id/guestbook/:entryId/delete",
