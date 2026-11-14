@@ -1,4 +1,39 @@
 const Memorial = require("../models/Memorial");
+const QRCode = require("qrcode");
+const config = require("../config");
+const { renderError } = require("../middleware/errorHandlers");
+
+// The landing page's code is real, and opens the sample memorial further down
+// the page. The page still works without it if generation ever fails.
+exports.viewLanding = async (req, res) => {
+  if (req.session.userId) {
+    return res.redirect("/dashboard");
+  }
+
+  let sampleQr = null;
+  try {
+    sampleQr = await QRCode.toString(`${config.publicBaseUrl(req)}/#sample`, {
+      type: "svg",
+      margin: 0,
+      errorCorrectionLevel: "M",
+      color: { dark: "#2e3b34", light: "#0000" },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
+  res.render("landing", { sampleQr });
+};
+
+function renderMemorialNotFound(res) {
+  renderError(
+    res,
+    404,
+    "This memorial isn't available",
+    "It may not be published yet, or it may have been taken down for now. If you scanned a QR code, the family or the funeral home or cemetery that placed it can help.",
+    "/#families",
+  );
+}
 
 exports.viewPublicMemorial = async (req, res) => {
   try {
@@ -8,17 +43,78 @@ exports.viewPublicMemorial = async (req, res) => {
     });
 
     if (!memorial) {
-      return res.status(404).send("Memorial not found or not published.");
+      return renderMemorialNotFound(res);
     }
 
-    res.render("memorial-public", { memorial });
+    res.render("memorial-public", {
+      memorial,
+      publicUrl: `${config.publicBaseUrl(req)}/memorial/${memorial.slug}`,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Something went wrong loading this memorial.");
+    renderError(
+      res,
+      500,
+      "Something went wrong",
+      "We couldn't load this memorial. Please try again in a moment.",
+    );
   }
 };
 
-// Light a candle (public, no auth required)
+exports.viewGallery = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      slug: req.params.slug,
+      isPublic: true,
+    });
+
+    if (!memorial) {
+      return renderMemorialNotFound(res);
+    }
+
+    res.render("memorial-gallery", { memorial });
+  } catch (err) {
+    console.error(err);
+    renderError(
+      res,
+      500,
+      "Something went wrong",
+      "We couldn't load this gallery. Please try again in a moment.",
+    );
+  }
+};
+
+// One photo in full, on its own page, with a way back to where the visitor was
+exports.viewPhoto = async (req, res) => {
+  try {
+    const memorial = await Memorial.findOne({
+      slug: req.params.slug,
+      isPublic: true,
+    });
+    const photo = memorial && memorial.photos.id(req.params.photoId);
+
+    if (!photo) {
+      return renderMemorialNotFound(res);
+    }
+
+    const fromGallery = req.query.from === "gallery";
+    res.render("memorial-photo", {
+      memorial,
+      photo,
+      backHref: `/memorial/${memorial.slug}${fromGallery ? "/gallery" : ""}`,
+      backLabel: fromGallery ? "Back to photos" : "Back to memorial",
+    });
+  } catch (err) {
+    console.error(err);
+    renderError(
+      res,
+      500,
+      "Something went wrong",
+      "We couldn't load this photo. Please try again in a moment.",
+    );
+  }
+};
+
 exports.lightCandle = async (req, res) => {
   try {
     const memorial = await Memorial.findOneAndUpdate(
@@ -37,16 +133,23 @@ exports.lightCandle = async (req, res) => {
     res.status(500).json({ error: "Something went wrong." });
   }
 };
-// Add a guestbook entry (public, no auth required)
+
 exports.addGuestbookEntry = async (req, res) => {
   try {
     const { name, message } = req.body;
 
-    if (!name || !message || !name.trim() || !message.trim()) {
+    if (typeof name !== "string" || typeof message !== "string") {
       return res.status(400).json({ error: "Name and message are required." });
     }
 
-    if (name.length > 60 || message.length > 500) {
+    const trimmedName = name.trim();
+    const trimmedMessage = message.trim();
+
+    if (!trimmedName || !trimmedMessage) {
+      return res.status(400).json({ error: "Name and message are required." });
+    }
+
+    if (trimmedName.length > 60 || trimmedMessage.length > 500) {
       return res.status(400).json({ error: "Name or message is too long." });
     }
 
@@ -54,7 +157,7 @@ exports.addGuestbookEntry = async (req, res) => {
       { slug: req.params.slug, isPublic: true },
       {
         $push: {
-          guestbookEntries: { name: name.trim(), message: message.trim() },
+          guestbookEntries: { name: trimmedName, message: trimmedMessage },
         },
       },
       { returnDocument: "after" },

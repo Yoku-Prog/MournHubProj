@@ -1,0 +1,323 @@
+/* Shared by every page: set like printed memorial stationery, on plain cream card */
+
+@font-face {
+  font-family: "Marcellus";
+  src: url("/fonts/marcellus-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Marcellus";
+  src: url("/fonts/marcellus-latin-ext-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Alegreya Sans";
+  src: url("/fonts/alegreya-sans-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Alegreya Sans";
+  src: url("/fonts/alegreya-sans-latin-ext-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Alegreya Sans";
+  src: url("/fonts/alegreya-sans-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Alegreya Sans";
+  src: url("/fonts/alegreya-sans-latin-ext-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Alegreya Sans";
+  src: url("/fonts/alegreya-sans-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Alegreya Sans";
+  src: url("/fonts/alegreya-sans-latin-ext-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "EB Garamond";
+  src: url("/fonts/eb-garamond-latin-ext-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  --stone: #f6f3ec;
+  --ink: #2e3b34;
+  --accent: #3e5c4c;
+  --text: #2e3b34;
+  --text-quiet: #5c6b60;
+  --inlay: #fbfaf6;
+  --inlay-ink: #2e3b34;
+  --inlay-quiet: #5c6b60;
+  --inlay-line: #dcd9cc;
+  --danger: #8f4a3a;
+  --gilt: #d4af58;
+  --gilt-hover: #c9a34a;
+  --radius: 16px;
+  --radius-control: 10px;
+  --reading-face: "EB Garamond", "Iowan Old Style", Georgia, serif;
+  --inscription-face: "Marcellus", "Optima", "Candara", serif;
+  --control-face: "Alegreya Sans", "Gill Sans", "Trebuchet MS", sans-serif;
+  --pad: clamp(20px, 6vw, 72px);
+  --gap: clamp(28px, 4vw, 56px);
+  color-scheme: light;
+  scrollbar-color: #7c8b7f var(--stone);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--stone);
+  color: var(--text);
+  font-family: var(--reading-face);
+  font-size: clamp(1.2rem, 0.4vw + 1.1rem, 1.35rem);
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--stone);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Titles on working pages */
+.cut {
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--inlay-line);
+  background: var(--stone);
+  font-family: var(--control-face);
+}
+
+.wordmark {
+  font-family: var(--inscription-face);
+  font-size: 1.45rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.masthead nav {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px clamp(16px, 2.4vw, 32px);
+  font-size: 1.02rem;
+  font-weight: 500;
+}
+
+.masthead nav a {
+  text-decoration: none;
+}
+
+.masthead nav a:hover {
+  text-decoration: underline;
+}
+
+/* The one main action on a page */
+.gilded {
+  display: inline-block;
+  padding: 0.72em 1.5em;
+  border-radius: var(--radius-control);
+  background: var(--gilt);
+  color: var(--ink);
+  font-family: var(--control-face);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 180ms ease-out;
+}
+
+.gilded:hover {
+  background: var(--gilt-hover);
+  color: var(--ink);
+}
+
+/* Tiles hold what staff work on, plain as a sheet of card */
+.inlay {
+  border: 1px solid var(--inlay-line);
+  border-radius: var(--radius);
+  background: var(--inlay);
+  color: var(--inlay-ink);
+}
+
+/* A lit candle, on a real memorial and on the landing page's sample */
+.flame-group {
+  transform-origin: 12px 10px;
+}
+
+.is-lit .flame-outer {
+  animation: flicker-outer 1.6s ease-in-out infinite;
+  transform-origin: 12px 10px;
+}
+
+.is-lit .flame-inner {
+  animation: flicker-inner 1.3s ease-in-out infinite;
+  transform-origin: 12px 8.5px;
+}
+
+@keyframes flicker-outer {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.08, 1.15) rotate(-3deg);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(0.95, 1.05) rotate(2deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.1, 0.95) rotate(-1deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes flicker-inner {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  30% {
+    transform: scale(1.1, 1.2) rotate(2deg);
+  }
+  60% {
+    transform: scale(0.9, 1) rotate(-2deg);
+  }
+}
+
+/* A warm light across the whole page when a candle is lit */
+.candle-glow-overlay {
+  position: fixed;
+  z-index: 500;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(212, 175, 88, 0.1),
+    rgba(212, 175, 88, 0.32) 40%,
+    rgba(212, 175, 88, 0.08)
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.8s ease-out;
+}
+
+.candle-glow-overlay.is-active {
+  opacity: 1;
+  transition: opacity 0.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-lit .flame-outer,
+  .is-lit .flame-inner {
+    animation: none;
+  }
+
+  .candle-glow-overlay,
+  .candle-glow-overlay.is-active {
+    transition: none;
+  }
+}

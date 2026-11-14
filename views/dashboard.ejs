@@ -1,52 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Dashboard - MournHub</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/style.css">
+  <%- include("partials/head", { title: "Dashboard - MournHub" }) %>
+  <script src="/js/forms.js" defer></script>
 </head>
 <body>
-  <h2>Welcome, <%= userName %></h2>
-  <a href="/logout">Logout</a>
-  <hr>
-  <% if (userRole === 'superadmin') { %>
-    <a href="/admins/pending">Manage Pending Admins</a>
-  <% } %>
-  <h3>Your Memorials</h3>
-  <a href="/memorials/new">+ Create New Memorial</a>
+  <div class="page">
+    <header class="masthead">
+      <a href="/dashboard" class="wordmark">MournHub</a>
+      <nav aria-label="Account">
+        <% if (userRole === 'superadmin') { %>
+          <a href="/admins">Manage admins</a>
+        <% } %>
+        <form action="/logout" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+          <button type="submit" class="link-button">Log out</button>
+        </form>
+      </nav>
+    </header>
 
-  <% if (memorials.length === 0) { %>
-    <p>You haven't created any memorials yet.</p>
-  <% } else { %>
-    <ul>
-      <% memorials.forEach(memorial => { %>
-        <li class="memorial-card" style="list-style: none;">
-          <strong><%= memorial.fullName %></strong>
-          — Status: <%= memorial.isPublic ? 'Public' : 'Private (Draft)' %>
-          <br>
-          <a href="/memorials/<%= memorial._id %>/edit">Edit</a> |
+    <main>
+      <div class="page-heading">
+        <div>
+          <h1 class="cut app-title">Your memorials</h1>
+          <p class="greeting">Welcome, <%= userName %></p>
+        </div>
+        <a href="/memorials/new" class="gilded">Create new memorial</a>
+      </div>
 
-          <form action="/memorials/<%= memorial._id %>/toggle-publish" method="POST" style="display:inline;">
-            <button type="submit"><%= memorial.isPublic ? 'Unpublish' : 'Publish' %></button>
-          </form>
+      <% if (memorials.length === 0) { %>
+        <div class="inlay empty-state">
+          <p>You haven't created any memorials yet.</p>
+        </div>
+      <% } else { %>
+        <div class="inlay ledger">
+          <% memorials.forEach(memorial => { %>
+            <article class="ledger-row">
+              <div class="ledger-main">
+                <div class="ledger-identity">
+                  <% if (memorial.photoUrl) { %>
+                    <img src="<%= memorial.photoUrl %>" alt="" class="ledger-photo" loading="lazy">
+                  <% } %>
+                  <div>
+                    <h2 class="panel-heading"><%= memorial.fullName %></h2>
+                    <span class="status <%= memorial.isPublic ? 'status-public' : '' %>">
+                      <%= memorial.isPublic ? 'Public' : 'Private draft' %>
+                    </span>
+                    <p class="ledger-stats">
+                      <%= memorial.candleCount || 0 %> candle<%= memorial.candleCount === 1 ? '' : 's' %>
+                      &middot;
+                      <%= memorial.guestbookEntries.length %> message<%= memorial.guestbookEntries.length === 1 ? '' : 's' %>
+                    </p>
+                  </div>
+                </div>
 
-          <form action="/memorials/<%= memorial._id %>/delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete this memorial permanently?');">
-            <button type="submit">Delete</button>
-          </form>
+                <div class="row-actions">
+                  <a href="/memorials/<%= memorial._id %>/edit" class="btn btn-secondary">Edit</a>
 
-          <% if (memorial.isPublic) { %>
-            <br>
-            Public link: <a href="<%= memorial.publicUrl %>" target="_blank"><%= memorial.publicUrl %></a>
-            <br>
-            <img src="<%= memorial.qrCode %>" alt="QR Code" width="150">
-            <br>
-            <a href="<%= memorial.qrCode %>" download="<%= memorial.slug %>-qrcode.png">Download QR Code</a>
-          <% } %>
-        </li>
-      <% }) %>
-    </ul>
-  <% } %>
+                  <form action="/memorials/<%= memorial._id %>/toggle-publish" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit" class="btn-secondary"><%= memorial.isPublic ? 'Unpublish' : 'Publish' %></button>
+                  </form>
+
+                  <form action="/memorials/<%= memorial._id %>/delete" method="POST" data-confirm="Delete this memorial and all of its photos permanently?">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit" class="btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+
+              <% if (memorial.isPublic) { %>
+                <div class="qr-section">
+                  <img src="/memorials/<%= memorial._id %>/qr.png" alt="QR code for <%= memorial.fullName %>'s memorial" width="150" height="150" loading="lazy">
+                  <div class="qr-details">
+                    <p class="qr-label">Public link</p>
+                    <a href="<%= memorial.publicUrl %>" target="_blank" rel="noopener" class="qr-link"><%= memorial.publicUrl %></a>
+                    <a href="/memorials/<%= memorial._id %>/qr.png" download="<%= memorial.slug %>-qrcode.png" class="btn btn-secondary qr-download">Download QR code</a>
+                  </div>
+                </div>
+              <% } %>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </main>
+  </div>
 </body>
 </html>

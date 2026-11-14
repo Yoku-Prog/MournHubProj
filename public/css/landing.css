@@ -1,0 +1,407 @@
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 67px;
+}
+
+.sheet {
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+h1 {
+  font-size: clamp(2.7rem, 5.6vw, 4.7rem);
+  font-weight: 400;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+main h2 {
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  font-weight: 400;
+  line-height: 1.12;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+  font-family: var(--control-face);
+  font-weight: 500;
+}
+
+/* Opening: the words, and a headstone with the code set into it */
+.opening {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 88px);
+  padding-block: clamp(40px, 5vw, 72px) clamp(72px, 9vw, 120px);
+}
+
+.lede {
+  max-width: 31em;
+  margin-top: 24px;
+  font-size: 1.16em;
+}
+
+.opening .actions {
+  margin-top: 32px;
+}
+
+.marker-scene {
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+.marker {
+  position: relative;
+  padding-inline: 22px;
+}
+
+.marker-stone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 58px 24px 34px;
+  border-radius: 50% 50% 4px 4px / 24% 24% 4px 4px;
+  background: #262f2a url("/img/granite.webp") 0 0 / 700px 700px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  color: var(--gilt);
+  text-align: center;
+}
+
+.marker-intro {
+  font-family: var(--inscription-face);
+  font-size: 0.98em;
+  letter-spacing: 0.02em;
+}
+
+.marker-name {
+  margin-top: 4px;
+  font-family: var(--inscription-face);
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.marker-dates {
+  margin-top: 6px;
+  font-size: 1.05em;
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.08em;
+}
+
+.marker-plate {
+  width: 142px;
+  margin-top: 24px;
+  padding: 10px;
+  border-radius: 4px;
+  background: #fbfaf6;
+  box-shadow: 0 0 0 1px var(--gilt);
+}
+
+.marker-plate svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.marker-base {
+  height: 30px;
+  margin-inline: -22px;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 3px 3px 0 0;
+  background: #232b27 url("/img/granite.webp") 300px 200px / 700px 700px;
+}
+
+.marker-candle {
+  position: absolute;
+  right: -6px;
+  bottom: 30px;
+  overflow: visible;
+}
+
+.marker-flame {
+  transform-origin: 12px 14px;
+  animation: flame 2.4s ease-in-out infinite;
+}
+
+@keyframes flame {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.94, 1.07);
+  }
+  70% {
+    transform: scale(1.05, 0.97);
+  }
+}
+
+.marker-scene figcaption {
+  margin-top: 14px;
+  color: var(--text-quiet);
+  font-size: 0.95em;
+  text-align: center;
+}
+
+/* Laid out like an order of service: a name on the left, its words on the right */
+.programme,
+.sample,
+.families,
+.close {
+  padding-block: clamp(64px, 8vw, 104px);
+  border-top: 1px solid var(--inlay-line);
+}
+
+.programme ol {
+  list-style: none;
+  max-width: 640px;
+  margin: clamp(28px, 4vw, 48px) auto 0;
+  padding: 0;
+}
+
+.programme li {
+  padding-block: 22px;
+}
+
+.programme li + li {
+  border-top: 1px solid var(--inlay-line);
+}
+
+.programme h3 {
+  margin: 0;
+  font-family: var(--inscription-face);
+  font-size: 1.4em;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.programme li p {
+  margin: 6px 0 0;
+}
+
+.care dl {
+  max-width: 760px;
+  margin: clamp(28px, 4vw, 48px) auto 0;
+}
+
+.care dl > div {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 4px 28px;
+  padding-block: 16px;
+}
+
+.care dl > div + div {
+  border-top: 1px solid var(--inlay-line);
+}
+
+dt {
+  font-family: var(--inscription-face);
+}
+
+dd {
+  margin: 0;
+}
+
+.section-lede {
+  max-width: 32em;
+  margin: 16px auto 0;
+  text-align: center;
+}
+
+/* The sample is set like the real memorial page */
+.memorial-sample {
+  max-width: 480px;
+  margin: clamp(32px, 4vw, 48px) auto 0;
+  text-align: center;
+}
+
+.sample-label {
+  margin-bottom: 28px;
+  color: var(--text-quiet);
+  font-family: var(--control-face);
+  font-size: 0.82em;
+  line-height: 1.3;
+}
+
+.sample-photo {
+  display: grid;
+  place-items: center;
+  width: 124px;
+  height: 124px;
+  margin: 0 auto 18px;
+  border: 1px solid var(--inlay-line);
+  border-radius: 50%;
+  background: var(--inlay);
+  color: var(--text-quiet);
+  font-family: var(--inscription-face);
+  font-size: 2rem;
+  letter-spacing: 0.06em;
+}
+
+.sample-intro {
+  font-family: var(--inscription-face);
+  font-size: 0.98em;
+  letter-spacing: 0.02em;
+}
+
+.memorial-sample h3 {
+  margin-top: 2px;
+  font-family: var(--inscription-face);
+  font-size: 1.6em;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.sample-dates {
+  margin-top: 4px;
+  color: var(--text-quiet);
+  font-variant-numeric: lining-nums;
+}
+
+.sample-candle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 22px;
+  padding: 6px 20px;
+  border: 1px solid var(--text-quiet);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--control-face);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 180ms ease-out;
+}
+
+.sample-candle:hover:not(:disabled) {
+  background: #edeae0;
+}
+
+.sample-candle:disabled {
+  cursor: default;
+}
+
+.sample-candle-icon {
+  overflow: visible;
+}
+
+.sample-candle.is-lit {
+  border-color: #8a6414;
+  color: #6f4f0d;
+}
+
+.sample-count {
+  margin-top: 8px;
+  color: var(--text-quiet);
+  font-size: 0.92em;
+  font-variant-numeric: lining-nums;
+}
+
+.sample-story {
+  margin-top: 24px;
+  text-align: left;
+}
+
+.memorial-sample blockquote {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--inlay-line);
+  text-align: left;
+}
+
+.memorial-sample blockquote footer {
+  margin-top: 2px;
+  color: var(--text-quiet);
+  font-size: 0.92em;
+  font-variant-numeric: lining-nums;
+}
+
+.families,
+.close {
+  text-align: center;
+}
+
+.families p,
+.close > p {
+  max-width: 32em;
+  margin: 16px auto 0;
+}
+
+.close .actions {
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.close-address {
+  color: var(--text-quiet);
+}
+
+.colophon {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 26px 34px;
+  border-top: 1px solid var(--inlay-line);
+  color: var(--text-quiet);
+  font-family: var(--control-face);
+  font-size: 0.9em;
+}
+
+@media (max-width: 860px) {
+  .opening {
+    grid-template-columns: minmax(0, 1fr);
+    text-align: center;
+  }
+
+  .lede {
+    margin-inline: auto;
+  }
+
+  .opening .actions {
+    justify-content: center;
+  }
+
+  .nav-section {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .care dl > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .opening .actions,
+  .close .actions {
+    flex-direction: column;
+  }
+
+  .actions .gilded {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .marker-flame {
+    animation: none;
+  }
+}

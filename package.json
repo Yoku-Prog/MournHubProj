@@ -4,8 +4,10 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "node --test --test-force-exit",
+    "start": "node server.js",
+    "reset-link": "node scripts/create-reset-link.js",
+    "create-superadmin": "node scripts/create-superadmin.js"
   },
   "keywords": [],
   "author": "",
@@ -19,11 +21,20 @@
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.3",
     "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
     "mongodb": "^7.6.0",
-    "mongoose": "^9.9.4",
+    "mongoose": "^9.12.1",
     "multer": "^2.4.0",
     "qrcode": "^1.5.4",
     "slugify": "^1.6.9"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0",
+    "supertest": "^7.3.1"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

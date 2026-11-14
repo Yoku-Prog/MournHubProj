@@ -1,175 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title><%= memorial.fullName %> - MournHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <%- include("partials/head", { title: memorial.fullName + " - MournHub" }) %>
+  <%# Families share these pages by link and QR code, so they stay out of search results. %>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="<%= memorial.lifeStory.slice(0, 160) %>">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="In loving memory of <%= memorial.fullName %>">
+  <meta property="og:description" content="<%= memorial.lifeStory.slice(0, 160) %>">
+  <meta property="og:url" content="<%= publicUrl %>">
+  <% if (memorial.photoUrl) { %>
+    <meta property="og:image" content="<%= memorial.photoUrl %>">
+  <% } %>
+  <script src="/js/memorial.js" defer></script>
 </head>
-<body>
+<body data-slug="<%= memorial.slug %>">
 
   <div id="candleGlowOverlay" class="candle-glow-overlay"></div>
 
-  <div class="memorial-public">
+  <main class="memorial-public">
+    <header>
+      <% if (memorial.photoUrl) { %>
+        <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo">
+      <% } %>
 
-   <img src="<%= memorial.photoUrl %>" alt="<%= memorial.fullName %>" class="memorial-photo" loading="lazy">
+      <p class="memorial-intro">In loving memory of</p>
+      <h1 class="cut <%= memorial.fullName.length > 40 ? 'name-long' : '' %>"><%= memorial.fullName %></h1>
 
-    <div class="memorial-eyebrow">In loving memory of</div>
-    <h1 class="fade-in"><%= memorial.fullName %></h1>
+      <% if (memorial.birthDate || memorial.deathDate) { %>
+        <p class="memorial-dates">
+          <% if (memorial.birthDate) { %><%= formatDate(memorial.birthDate) %><% } %>
+          <% if (memorial.birthDate && memorial.deathDate) { %>&ndash;<% } %>
+          <% if (memorial.deathDate) { %><%= formatDate(memorial.deathDate) %><% } %>
+        </p>
+      <% } %>
+    </header>
 
-    <% if (memorial.birthDate || memorial.deathDate) { %>
-      <p class="memorial-dates">
-        <% if (memorial.birthDate) { %><%= memorial.birthDate.toDateString() %><% } %>
-        &mdash;
-        <% if (memorial.deathDate) { %><%= memorial.deathDate.toDateString() %><% } %>
-      </p>
-    <% } %>
+    <div class="memorial-sheet">
+      <div class="candle-section">
+        <button id="candleBtn" class="candle-btn">
+          <svg class="candle-icon" viewBox="0 0 24 30" width="30" height="38" aria-hidden="true">
+            <rect x="8" y="16" width="8" height="12" rx="1" fill="#ffffff" stroke="#5c6b60" stroke-width="1"/>
+            <line x1="12" y1="16" x2="12" y2="10" stroke="#2e3b34" stroke-width="1.5" stroke-linecap="round"/>
+            <g class="flame-group">
+              <path class="flame-outer" d="M12 10 Q7 4 12 -3 Q17 4 12 10 Z" fill="#c98a2b"/>
+              <path class="flame-inner" d="M12 8.5 Q9.5 4.5 12 0 Q14.5 4.5 12 8.5 Z" fill="#f0c060"/>
+            </g>
+          </svg>
+          <span id="candleLabel">Light a candle</span>
+        </button>
+        <p class="candle-count" aria-live="polite"><span id="candleCount"><%= memorial.candleCount || 0 %></span> candle<span id="candlePlural"><%= (memorial.candleCount === 1) ? '' : 's' %></span> lit in remembrance</p>
+      </div>
 
-    <hr class="memorial-divider">
+      <p class="memorial-story"><%= memorial.lifeStory %></p>
 
-    <div class="candle-section">
-      <button id="candleBtn" class="candle-btn">
-        <svg class="candle-icon" viewBox="0 0 24 30" width="30" height="38">
-          <rect x="8" y="16" width="8" height="12" rx="2" fill="#FBF8F3" stroke="#DCE3D6" stroke-width="1"/>
-          <ellipse cx="12" cy="16" rx="4" ry="1.5" fill="#F6F3EC" stroke="#DCE3D6" stroke-width="0.8"/>
-          <line x1="12" y1="16" x2="12" y2="10" stroke="#5C4A3A" stroke-width="1.5" stroke-linecap="round"/>
-          <g class="flame-group">
-            <path class="flame-outer" d="M12 10 Q7 4 12 -3 Q17 4 12 10 Z" fill="#F0985C"/>
-            <path class="flame-inner" d="M12 8.5 Q9.5 4.5 12 0 Q14.5 4.5 12 8.5 Z" fill="#FAD7A0"/>
-          </g>
-        </svg>
-        <span id="candleLabel">Light a candle</span>
-      </button>
-      <p class="candle-count"><span id="candleCount"><%= memorial.candleCount || 0 %></span> candle<span id="candlePlural"><%= (memorial.candleCount === 1) ? '' : 's' %></span> lit in remembrance</p>
+      <% if (memorial.photos && memorial.photos.length > 0) { %>
+        <div class="memorial-gallery-preview" role="group" aria-label="Photos">
+          <% memorial.photos.forEach(photo => { %>
+            <a href="/memorial/<%= memorial.slug %>/photos/<%= photo._id %>" class="gallery-track-link" title="Open the full photo">
+              <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>" class="gallery-track-thumb" loading="lazy">
+            </a>
+          <% }) %>
+        </div>
+        <a href="/memorial/<%= memorial.slug %>/gallery" class="view-all-photos-link">View all photos</a>
+      <% } %>
+
+      <section class="guestbook-section">
+        <h2 class="guestbook-heading">Messages of remembrance</h2>
+
+        <form id="guestbookForm" class="guestbook-form">
+          <input type="text" id="guestName" name="name" placeholder="Your name" aria-label="Your name" maxlength="60" required>
+          <textarea id="guestMessage" name="message" placeholder="Share a memory or message..." aria-label="Your message" maxlength="500" rows="3" required></textarea>
+          <button type="submit" id="guestbookSubmit">Leave a message</button>
+          <p id="guestbookError" class="error" hidden></p>
+        </form>
+
+        <div id="guestbookList" class="guestbook-list">
+          <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
+            <div class="guestbook-entry">
+              <p class="guestbook-entry-message"><%= entry.message %></p>
+              <p class="guestbook-entry-meta"><%= entry.name %>, <%= formatDate(entry.createdAt) %></p>
+            </div>
+          <% }) %>
+        </div>
+      </section>
     </div>
-    <div class="guestbook-section">
-      <h2 class="guestbook-heading">Messages of remembrance</h2>
 
-      <form id="guestbookForm" class="guestbook-form">
-        <input type="text" id="guestName" name="name" placeholder="Your name" maxlength="60" required>
-        <textarea id="guestMessage" name="message" placeholder="Share a memory or message..." maxlength="500" rows="3" required></textarea>
-        <button type="submit" id="guestbookSubmit">Leave a message</button>
-        <p id="guestbookError" class="error" style="display:none;"></p>
-      </form>
-
-      <div id="guestbookList" class="guestbook-list">
-        <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
-          <div class="guestbook-entry">
-            <p class="guestbook-entry-message"><%= entry.message %></p>
-            <p class="guestbook-entry-meta">&mdash; <%= entry.name %>, <%= new Date(entry.createdAt).toDateString() %></p>
-          </div>
-        <% }) %>
-      </div>
-    </div>
-    <p class="memorial-story"><%= memorial.lifeStory %></p>
-    <% if (memorial.photos && memorial.photos.length > 0) { %>
-      <div class="memorial-gallery">
-        <% memorial.photos.forEach((photo, index) => { %>
-          <img src="<%= photo %>" alt="Photo of <%= memorial.fullName %>" class="gallery-thumb" loading="lazy" onclick="openLightbox('<%= photo %>')">
-        <% }) %>
-      </div>
-
-      <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-        <img id="lightboxImg" src="" alt="Enlarged photo">
-      </div>
-    <% } %>
-    <div class="memorial-footer">Shared with love, through <span>MournHub</span></div>
-  </div>
-
-  <script>
-    const candleBtn = document.getElementById('candleBtn');
-    const candleCountEl = document.getElementById('candleCount');
-    const candlePluralEl = document.getElementById('candlePlural');
-    const candleLabelEl = document.getElementById('candleLabel');
-    const slug = '<%= memorial.slug %>';
-    const storageKey = 'mournhub-lit-' + slug;
-    const glowOverlay = document.getElementById('candleGlowOverlay');
-
-    if (localStorage.getItem(storageKey)) {
-      candleBtn.classList.add('is-lit');
-      candleLabelEl.textContent = 'Candle lit';
-      candleBtn.disabled = true;
-    }
-
-    candleBtn.addEventListener('click', async () => {
-      if (localStorage.getItem(storageKey)) return;
-
-      candleBtn.disabled = true;
-      try {
-        const res = await fetch(`/memorial/${slug}/light-candle`, { method: 'POST' });
-        const data = await res.json();
-
-        if (res.ok) {
-          candleCountEl.textContent = data.candleCount;
-          candlePluralEl.textContent = data.candleCount === 1 ? '' : 's';
-          candleBtn.classList.add('is-lit');
-          candleLabelEl.textContent = 'Candle lit';
-          localStorage.setItem(storageKey, 'true');
-
-          glowOverlay.classList.add('is-active');
-          setTimeout(() => {
-            glowOverlay.classList.remove('is-active');
-          }, 1000); 
-        } else {
-          candleBtn.disabled = false;
-        }
-      } catch (err) {
-        candleBtn.disabled = false;
-      }
-    });
-    const guestbookForm = document.getElementById('guestbookForm');
-const guestbookList = document.getElementById('guestbookList');
-const guestbookError = document.getElementById('guestbookError');
-const guestbookSubmit = document.getElementById('guestbookSubmit');
-
-guestbookForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  guestbookError.style.display = 'none';
-
-  const name = document.getElementById('guestName').value.trim();
-  const message = document.getElementById('guestMessage').value.trim();
-
-  if (!name || !message) return;
-
-  guestbookSubmit.disabled = true;
-  try {
-    const res = await fetch(`/memorial/${slug}/guestbook`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, message })
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      const entryEl = document.createElement('div');
-      entryEl.className = 'guestbook-entry fade-in';
-      entryEl.innerHTML = `
-        <p class="guestbook-entry-message"></p>
-        <p class="guestbook-entry-meta"></p>
-      `;
-      entryEl.querySelector('.guestbook-entry-message').textContent = data.entry.message;
-      entryEl.querySelector('.guestbook-entry-meta').textContent = `— ${data.entry.name}, ${new Date(data.entry.createdAt).toDateString()}`;
-      guestbookList.prepend(entryEl);
-      guestbookForm.reset();
-    } else {
-      guestbookError.textContent = data.error || 'Something went wrong.';
-      guestbookError.style.display = 'block';
-    }
-  } catch (err) {
-    guestbookError.textContent = 'Something went wrong. Please try again.';
-    guestbookError.style.display = 'block';
-  } finally {
-    guestbookSubmit.disabled = false;
-  }
-});
-function openLightbox(src) {
-  document.getElementById('lightboxImg').src = src;
-  document.getElementById('lightbox').classList.add('is-open');
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('is-open');
-}
-  </script>
+    <footer class="memorial-footer">Made with MournHub</footer>
+  </main>
 </body>
 </html>

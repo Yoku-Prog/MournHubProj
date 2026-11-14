@@ -1,0 +1,362 @@
+/*
+  Motion for the whole site. See "Motion" in DESIGN.md.
+
+  Everything is visible by default. Hidden starting states exist only inside the
+  no-preference block, and scroll reveals also need html.motion-ready, which
+  landing.js sets, so a failed script can't hide the page.
+*/
+:root {
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Between pages: the new page fades in over the old, with the wordmark held in place.
+   The old page stays opaque beneath it, so the cream never dips between pages. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: appear 240ms ease-out both;
+  mix-blend-mode: normal;
+}
+
+.wordmark {
+  view-transition-name: wordmark;
+}
+
+/* Feedback */
+a:where(:not(.btn, .gilded)) {
+  transition:
+    color 150ms ease-out,
+    text-decoration-color 150ms ease-out;
+}
+
+.masthead nav a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+}
+
+.masthead nav a:hover {
+  text-decoration-color: currentColor;
+}
+
+button,
+.btn,
+.gilded,
+.sample-candle {
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    color 150ms ease-out,
+    transform 100ms ease-out;
+}
+
+input,
+textarea,
+select {
+  transition: border-color 150ms ease-out;
+}
+
+button:active:not(:disabled),
+.btn:active,
+.gilded:active {
+  transform: translateY(1px);
+}
+
+.error,
+.notice {
+  animation: appear 220ms ease-out;
+}
+
+/* Loading. One circle everywhere: a quiet ring with a turning arc.
+   Buttons get it from forms.js and memorial.js while a request is on its way. */
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wait {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.is-loading::after {
+  display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.55em;
+  border: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  vertical-align: -0.14em;
+  animation: turn 800ms linear infinite;
+  content: "";
+}
+
+/* The candle's own gap already spaces it */
+.candle-btn.is-loading::after {
+  margin-left: 0;
+}
+
+/* An icon-only button has no room beside the icon, so the circle takes its place */
+.gallery-remove-btn.is-loading svg {
+  display: none;
+}
+
+.gallery-remove-btn.is-loading::after {
+  margin-left: 0;
+}
+
+/* Photos show the circle in their place while they load, then fade in.
+   Set by motion.js, so a photo is never hidden without it. */
+.img-loading {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='%23dcd9cc' stroke-width='2'/%3E%3Cpath d='M12 3a9 9 0 0 1 9 9' fill='none' stroke='%233e5c4c' stroke-width='2' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 12 12' to='360 12 12' dur='0.8s' repeatCount='indefinite'/%3E%3C/path%3E%3C/svg%3E") center / 28px no-repeat;
+}
+
+.img-fade:not(.img-loading) {
+  animation: appear 360ms ease-out;
+}
+
+/* A candle has no flame until someone lights it */
+:is(.candle-btn, .sample-candle):not(.is-lit) .flame-group {
+  opacity: 0;
+}
+
+.just-lit .flame-group {
+  animation: kindle 720ms var(--ease-settle);
+}
+
+@keyframes kindle {
+  0% {
+    transform: scale(0.15, 0.05);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.12, 1.25);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+#candleCount,
+#sampleCandleCount,
+#candleLabel,
+#sampleCandleLabel {
+  display: inline-block;
+}
+
+.tick {
+  animation: tick 320ms var(--ease-settle);
+}
+
+@keyframes tick {
+  from {
+    transform: translateY(0.35em);
+    opacity: 0;
+  }
+}
+
+/* Loops rest while nobody can see them. Set by motion.js. */
+.is-offscreen,
+.is-offscreen * {
+  animation-play-state: paused !important;
+}
+
+@keyframes inscribe {
+  from {
+    clip-path: inset(-20% 50%);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(-20% 0);
+    opacity: 1;
+  }
+}
+
+@keyframes draw-rule {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  /* The landing page's one authored moment: the inscription is set, the code is
+     placed, then the candle is lit. It waits until the headstone is in view. */
+  .marker-intro {
+    animation: inscribe 650ms var(--ease-settle) 100ms backwards;
+  }
+
+  .marker-name {
+    animation: inscribe 800ms var(--ease-settle) 300ms backwards;
+  }
+
+  .marker-dates {
+    animation: inscribe 600ms var(--ease-settle) 650ms backwards;
+  }
+
+  .marker-plate {
+    animation: appear 500ms ease-out 800ms backwards;
+  }
+
+  .marker-flame {
+    animation:
+      kindle 800ms var(--ease-settle) 1100ms backwards,
+      flame 2.4s ease-in-out 1900ms infinite;
+  }
+
+  /* Landing: each section's rule draws out from the centre */
+  html.motion-ready :is(.programme, .sample, .families, .close) {
+    position: relative;
+    border-top-color: transparent;
+  }
+
+  html.motion-ready :is(.programme, .sample, .families, .close)::before {
+    position: absolute;
+    top: -1px;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--inlay-line);
+    content: "";
+    transform: scaleX(0);
+  }
+
+  html.motion-ready :is(.programme, .sample, .families, .close).in-view::before {
+    animation: draw-rule 900ms var(--ease-settle) backwards;
+    transform: none;
+  }
+
+  /* Write, Publish, Place are a real sequence, so they arrive as one */
+  html.motion-ready .programme:not(.in-view) ol > li {
+    opacity: 0;
+  }
+
+  html.motion-ready .programme.in-view ol > li {
+    animation: appear 600ms ease-out backwards;
+  }
+
+  html.motion-ready .programme.in-view ol > li:nth-child(1) {
+    animation-delay: 150ms;
+  }
+
+  html.motion-ready .programme.in-view ol > li:nth-child(2) {
+    animation-delay: 300ms;
+  }
+
+  html.motion-ready .programme.in-view ol > li:nth-child(3) {
+    animation-delay: 450ms;
+  }
+
+  /* The sample memorial arrives in the same order as the headstone */
+  html.motion-ready .memorial-sample:not(.in-view) > * {
+    opacity: 0;
+  }
+
+  html.motion-ready .memorial-sample.in-view > * {
+    animation: appear 500ms ease-out 620ms backwards;
+  }
+
+  html.motion-ready .memorial-sample.in-view > .sample-label {
+    animation-delay: 0ms;
+  }
+
+  html.motion-ready .memorial-sample.in-view > .sample-photo {
+    animation-delay: 80ms;
+  }
+
+  html.motion-ready .memorial-sample.in-view > .sample-intro {
+    animation: inscribe 600ms var(--ease-settle) 200ms backwards;
+  }
+
+  html.motion-ready .memorial-sample.in-view > h3 {
+    animation: inscribe 750ms var(--ease-settle) 320ms backwards;
+  }
+
+  html.motion-ready .memorial-sample.in-view > .sample-dates {
+    animation: inscribe 550ms var(--ease-settle) 520ms backwards;
+  }
+
+  /* A family's page: the name is set once and quickly. The story never waits. */
+  .memorial-public header .memorial-photo {
+    animation: appear 500ms ease-out backwards;
+  }
+
+  .memorial-public header .memorial-intro {
+    animation: appear 400ms ease-out backwards;
+  }
+
+  .memorial-public header h1 {
+    animation: inscribe 700ms var(--ease-settle) 60ms backwards;
+  }
+
+  .memorial-public header .memorial-dates {
+    animation: appear 400ms ease-out 300ms backwards;
+  }
+}
+
+/* Reduced motion keeps every state change, but as a short fade with no movement */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  ::view-transition-new(root) {
+    animation-duration: 150ms;
+  }
+
+  .wordmark {
+    view-transition-name: none;
+  }
+
+  button,
+  .btn,
+  .gilded,
+  .sample-candle {
+    transition:
+      background-color 150ms ease-out,
+      border-color 150ms ease-out,
+      color 150ms ease-out;
+  }
+
+  button:active:not(:disabled),
+  .btn:active,
+  .gilded:active {
+    transform: none;
+  }
+
+  .just-lit .flame-group,
+  .tick,
+  .fade-in {
+    animation: appear 150ms ease-out;
+  }
+
+  /* The loading circle holds still and breathes instead of turning */
+  .is-loading::after {
+    animation: wait 1.6s ease-in-out infinite;
+  }
+
+  .img-loading {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='%23dcd9cc' stroke-width='2'/%3E%3Cpath d='M12 3a9 9 0 0 1 9 9' fill='none' stroke='%233e5c4c' stroke-width='2' stroke-linecap='round'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  .img-fade:not(.img-loading) {
+    animation-duration: 150ms;
+  }
+}

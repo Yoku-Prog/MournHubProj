@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include("partials/head", { title: memorial.fullName + " - Photos - MournHub" }) %>
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a href="/memorial/<%= memorial.slug %>">Back to memorial</a>
+    </header>
+
+    <main>
+      <div class="gallery-page-header">
+        <h1 class="cut app-title">Photos of <%= memorial.fullName %></h1>
+      </div>
+
+      <div class="gallery-grid">
+        <% memorial.photos.forEach(photo => { %>
+          <figure class="gallery-grid-item">
+            <a href="/memorial/<%= memorial.slug %>/photos/<%= photo._id %>?from=gallery" title="Open the full photo">
+              <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>" loading="lazy">
+            </a>
+            <% if (photo.caption) { %>
+              <figcaption><%= photo.caption %></figcaption>
+            <% } %>
+          </figure>
+        <% }) %>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

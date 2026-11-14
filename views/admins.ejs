@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include("partials/head", { title: "Manage Admins - MournHub" }) %>
+  <script src="/js/forms.js" defer></script>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a href="/dashboard" class="wordmark">MournHub</a>
+      <nav aria-label="Account">
+        <a href="/dashboard">Back to dashboard</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="page-heading">
+        <h1 class="cut app-title">Manage admins</h1>
+      </div>
+
+      <% if (error) { %>
+        <div class="inlay panel reset-link-notice">
+          <p class="error"><%= error %></p>
+        </div>
+      <% } %>
+
+      <% if (resetLink) { %>
+        <div class="inlay panel reset-link-notice">
+          <p>Send this password reset link to <strong><%= resetLinkFor %></strong>. It works once, expires in 24 hours, and won't be shown again.</p>
+          <input type="text" value="<%= resetLink %>" aria-label="Password reset link" readonly>
+        </div>
+      <% } %>
+
+      <h2 class="cut section-title list-title">Waiting for approval</h2>
+      <% if (pendingAdmins.length === 0) { %>
+        <p class="admin-empty">No accounts are waiting for approval.</p>
+      <% } else { %>
+        <div class="inlay ledger">
+          <% pendingAdmins.forEach(admin => { %>
+            <article class="ledger-row">
+              <div class="ledger-main">
+                <strong><%= admin.name %></strong><br>
+                <span class="admin-email"><%= admin.email %></span>
+                <div class="row-actions">
+                  <form action="/admins/<%= admin._id %>/approve" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit">Approve</button>
+                  </form>
+                  <form action="/admins/<%= admin._id %>/reject" method="POST" data-confirm="Reject and delete this account?">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit" class="btn-danger">Reject</button>
+                  </form>
+                </div>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <h2 class="cut section-title list-title">Approved</h2>
+      <div class="inlay ledger">
+        <% approvedAdmins.forEach(admin => { %>
+          <article class="ledger-row">
+            <div class="ledger-main">
+              <strong><%= admin.name %></strong>
+              <% if (admin.role === 'superadmin') { %><span class="status status-public">Main administrator</span><% } %>
+              <br>
+              <span class="admin-email"><%= admin.email %></span>
+              <div class="row-actions">
+                <form action="/admins/<%= admin._id %>/reset-link" method="POST">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                  <button type="submit" class="btn-secondary">Create password reset link</button>
+                </form>
+                <% if (admin.role !== 'superadmin') { %>
+                  <form action="/admins/<%= admin._id %>/revoke" method="POST" data-confirm="Revoke this admin's access? They'll be logged out, and their published memorials will stay online.">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit" class="btn-danger">Revoke access</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

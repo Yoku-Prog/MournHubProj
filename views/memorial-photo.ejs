@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include("partials/head", { title: memorial.fullName + " - Photo - MournHub" }) %>
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a href="<%= backHref %>"><%= backLabel %></a>
+    </header>
+
+    <main>
+      <figure class="photo-view">
+        <img src="<%= photo.url %>" alt="<%= photo.caption || 'Photo of ' + memorial.fullName %>">
+        <% if (photo.caption) { %>
+          <figcaption><%= photo.caption %></figcaption>
+        <% } %>
+      </figure>
+    </main>
+  </div>
+</body>
+</html>

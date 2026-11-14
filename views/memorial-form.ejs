@@ -1,78 +1,108 @@
+<% const isEdit = Boolean(memorial && memorial._id); -%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title><%= memorial ? 'Edit' : 'Create' %> Memorial - MournHub</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/style.css">
+  <%- include("partials/head", { title: (isEdit ? "Edit" : "Create") + " Memorial - MournHub" }) %>
+  <script src="/js/forms.js" defer></script>
 </head>
 <body>
-  <div class="page-form">
-    <div class="page-form-inner">
-      <h2><%= memorial ? 'Edit Memorial' : 'Create New Memorial' %></h2>
+  <div class="page">
+    <header class="masthead">
+      <a href="/dashboard" class="wordmark">MournHub</a>
+      <nav aria-label="Account">
+        <a class="back-to-dashboard" href="/dashboard">Back to dashboard</a>
+      </nav>
+    </header>
 
-      <% if (error) { %>
-        <p class="error"><%= error %></p>
-      <% } %>
+    <div class="page-heading">
+      <h1 class="cut app-title"><%= isEdit ? 'Edit Memorial' : 'Create New Memorial' %></h1>
+    </div>
 
-      <form method="POST" action="<%= memorial ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data">
-        <label>Full Name:</label>
-        <input type="text" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" required>
+    <main class="split split-form">
+      <div class="split-lead">
+        <form method="POST" action="<%= isEdit ? '/memorials/' + memorial._id + '/edit' : '/memorials/new' %>" enctype="multipart/form-data" class="inlay panel" id="memorialForm" data-saving-label="Saving…">
+          <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
 
-        <label>Photo (optional):</label>
-        <% if (memorial && memorial.photoUrl) { %>
-          <div class="current-photo-preview">
-            <img src="<%= memorial.photoUrl %>" alt="Current photo">
-            <p>Current photo — upload a new one to replace it</p>
-          </div>
+          <% if (error) { %>
+            <p class="error"><%= error %></p>
+          <% } %>
+
+          <label for="fullName">Full name</label>
+          <input type="text" id="fullName" name="fullName" value="<%= memorial ? memorial.fullName : '' %>" maxlength="120" required>
+
+          <label for="birthDate">Birth date</label>
+          <input type="date" id="birthDate" name="birthDate" value="<%= memorial ? formatDateInput(memorial.birthDate) : '' %>">
+
+          <label for="deathDate">Death date</label>
+          <input type="date" id="deathDate" name="deathDate" value="<%= memorial ? formatDateInput(memorial.deathDate) : '' %>">
+
+          <label for="lifeStory">Life story</label>
+          <textarea id="lifeStory" name="lifeStory" rows="10" required><%= memorial ? memorial.lifeStory : '' %></textarea>
+
+          <label for="photo">Main photo (optional)</label>
+          <% if (memorial && memorial.photoUrl) { %>
+            <div class="current-photo-preview">
+              <img src="<%= memorial.photoUrl %>" alt="Current photo">
+              <p>Current photo. Upload a new one to replace it.</p>
+            </div>
+          <% } %>
+          <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp">
+
+          <label for="galleryPhotos">Add gallery photos (optional, up to 10 at a time)</label>
+          <input type="file" id="galleryPhotos" name="galleryPhotos" accept="image/jpeg,image/png,image/webp" multiple>
+
+          <button type="submit" class="gilded form-submit"><%= isEdit ? 'Save changes' : 'Create memorial' %></button>
+        </form>
+      </div>
+
+      <aside class="split-side">
+        <% if (!isEdit) { %>
+          <p>This memorial stays private until you publish it from your dashboard.</p>
         <% } %>
-        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
 
-        <label>Additional Gallery Photos (optional, up to 10):</label>
-        <% if (memorial && memorial.photos && memorial.photos.length > 0) { %>
-          <div class="gallery-preview-grid">
-            <% memorial.photos.forEach(photo => { %>
-              <div class="gallery-preview-item">
-                <img src="<%= photo %>" alt="Gallery photo">
-                <form action="/memorials/<%= memorial._id %>/photos/<%= encodeURIComponent(photo) %>/delete" method="POST" onsubmit="return confirm('Remove this photo?');">
-                  <button type="submit" class="gallery-remove-btn">✕</button>
+        <% if (isEdit && memorial.guestbookEntries && memorial.guestbookEntries.length > 0) { %>
+          <section class="inlay panel">
+            <h2 class="panel-heading">Guestbook messages <span class="count">(<%= memorial.guestbookEntries.length %>)</span></h2>
+            <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
+              <div class="moderation-entry">
+                <p><%= entry.message %></p>
+                <p class="moderation-meta"><%= entry.name %>, <%= formatDate(entry.createdAt) %></p>
+                <form action="/memorials/<%= memorial._id %>/guestbook/<%= entry._id %>/delete" method="POST" data-confirm="Delete this message?">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                  <button type="submit" class="btn-danger">Remove</button>
                 </form>
               </div>
             <% }) %>
-          </div>
+          </section>
         <% } %>
-        <input type="file" name="galleryPhotos" accept="image/jpeg,image/png,image/webp" multiple>
-
-        <label>Birth Date:</label>
-        <input type="date" name="birthDate" value="<%= memorial && memorial.birthDate ? memorial.birthDate.toISOString().split('T')[0] : '' %>">
-
-        <label>Death Date:</label>
-        <input type="date" name="deathDate" value="<%= memorial && memorial.deathDate ? memorial.deathDate.toISOString().split('T')[0] : '' %>">
-
-        <label>Life Story:</label>
-        <textarea name="lifeStory" rows="10" required><%= memorial ? memorial.lifeStory : '' %></textarea>
-
-        <button type="submit"><%= memorial ? 'Save Changes' : 'Create Memorial' %></button>
-      </form>
-
-      <% if (memorial && memorial.guestbookEntries && memorial.guestbookEntries.length > 0) { %>
-        <div class="guestbook-moderation">
-          <h3>Guestbook messages (<%= memorial.guestbookEntries.length %>)</h3>
-          <% memorial.guestbookEntries.slice().reverse().forEach(entry => { %>
-            <div class="memorial-card guestbook-moderation-entry">
-              <p class="guestbook-moderation-message"><%= entry.message %></p>
-              <p class="guestbook-moderation-meta">&mdash; <%= entry.name %>, <%= new Date(entry.createdAt).toDateString() %></p>
-              <form action="/memorials/<%= memorial._id %>/guestbook/<%= entry._id %>/delete" method="POST" onsubmit="return confirm('Delete this message?');">
-                <button type="submit" class="btn-danger">Remove</button>
-              </form>
+        <% if (isEdit && memorial.photos && memorial.photos.length > 0) { %>
+          <section class="inlay panel">
+            <h2 class="panel-title panel-heading">Gallery photos</h2>
+            <p class="gallery-caption-hint">Captions are saved when you choose Save changes.</p>
+            <div class="gallery-preview-grid">
+              <% memorial.photos.forEach(photo => { %>
+                <div class="gallery-preview-item">
+                  <img src="<%= photo.url %>" alt="<%= photo.caption || 'Gallery photo' %>">
+                  <form action="/memorials/<%= memorial._id %>/photos/<%= photo._id %>/delete" method="POST" class="gallery-remove-form" data-confirm="Remove this photo?">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit" class="gallery-remove-btn" aria-label="Remove photo">
+                      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                        <path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="square"/>
+                      </svg>
+                    </button>
+                  </form>
+                  <%# Belongs to the main form, so one "Save changes" saves every caption %>
+                  <div class="gallery-caption-form">
+                    <input type="text" form="memorialForm" name="captions[<%= photo._id %>]" value="<%= photo.caption || '' %>" placeholder="Add a caption" aria-label="Photo caption" maxlength="200">
+                  </div>
+                </div>
+              <% }) %>
             </div>
-          <% }) %>
-        </div>
-      <% } %>
+          </section>
+        <% } %>
 
-      <a class="back-to-dashboard" href="/dashboard">← Back to Dashboard</a>
-    </div>
+      </aside>
+    </main>
   </div>
 </body>
 </html>
