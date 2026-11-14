@@ -12,12 +12,16 @@ const publicRoutes = require("./routes/publicRoutes");
 const { exposeCsrfToken } = require("./middleware/csrf");
 const { notFound, errorHandler } = require("./middleware/errorHandlers");
 const { formatDate } = require("./utils/dates");
+const connectDB = require("./config/db");
 
 const app = express();
 
 app.set("trust proxy", config.trustProxy);
 
 // View engine
+// Named outright, not left for Express to look up, so hosts that trace
+// dependencies (Vercel) know to include it
+app.engine("ejs", require("ejs").__express);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.locals.contactEmail = config.contactEmail;
@@ -42,6 +46,13 @@ app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+
+// On a serverless host this file is loaded without server.js, so nothing has
+// connected yet. Locally the connection already exists and this passes through.
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 // Session setup
 app.use(
