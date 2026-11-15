@@ -8,6 +8,11 @@ if (process.env.DNS_SERVERS) {
 
 const isProduction = process.env.NODE_ENV === "production";
 
+// Vercel's MongoDB Atlas integration names the connection string MONGODB_URI
+if (!process.env.MONGO_URI && process.env.MONGODB_URI) {
+  process.env.MONGO_URI = process.env.MONGODB_URI;
+}
+
 const requiredVars = ["MONGO_URI", "SESSION_SECRET"];
 if (isProduction) {
   requiredVars.push(
