@@ -776,3 +776,110 @@ test("saving a memorial saves its photo captions, which show on the photo page",
   const page = await request(app).get(`/memorial/${saved.slug}/photos/${photoId}`);
   assert.match(page.text, /<figcaption>At the beach, 1984<\/figcaption>/);
 });
+
+// Time online
+
+const postForm = (agent, path, token, fields = {}) =>
+  agent.post(path).type("form").send({ _csrf: token, ...fields });
+
+test("publishing needs a choice of how long the memorial stays online", async () => {
+  const { agent, user, token } = await loggedIn();
+  const memorial = await createMemorial(user);
+  const path = `/memorials/${memorial._id}/toggle-publish`;
+
+  await postForm(agent, path, token);
+  assert.equal((await Memorial.findById(memorial._id)).isPublic, false);
+
+  await postForm(agent, path, token, { term: "forever" });
+  assert.equal((await Memorial.findById(memorial._id)).isPublic, false);
+
+  await postForm(agent, path, token, { term: "1y" });
+  const published = await Memorial.findById(memorial._id);
+  assert.equal(published.isPublic, true);
+  assert.equal(published.term, "1y");
+  assert.equal(published.termPurchases.length, 1);
+  const days = (published.expiresAt - Date.now()) / 86400000;
+  assert.ok(days > 364 && days < 367);
+});
+
+test("a permanent memorial has no end date", async () => {
+  const { agent, user, token } = await loggedIn();
+  const memorial = await createMemorial(user);
+  await postForm(agent, `/memorials/${memorial._id}/toggle-publish`, token, { term: "permanent" });
+
+  const published = await Memorial.findById(memorial._id);
+  assert.equal(published.isPublic, true);
+  assert.equal(published.expiresAt, null);
+  assert.match((await agent.get("/dashboard")).text, /Permanent/);
+});
+
+test("unpublishing and publishing again keeps the same end date", async () => {
+  const { agent, user, token } = await loggedIn();
+  const memorial = await createMemorial(user);
+  const path = `/memorials/${memorial._id}/toggle-publish`;
+
+  await postForm(agent, path, token, { term: "5y" });
+  const { expiresAt } = await Memorial.findById(memorial._id);
+
+  await postForm(agent, path, token);
+  await postForm(agent, path, token);
+  const again = await Memorial.findById(memorial._id);
+  assert.equal(again.isPublic, true);
+  assert.equal(again.expiresAt.getTime(), expiresAt.getTime());
+  assert.equal(again.termPurchases.length, 1);
+});
+
+test("a memorial whose time has ended is closed to visitors until it's brought back", async () => {
+  const { agent, user, token } = await loggedIn();
+  const memorial = await createMemorial(user, {
+    isPublic: true,
+    term: "1y",
+    expiresAt: new Date(Date.now() - 86400000),
+    photos: [{ url: "https://res.cloudinary.com/test/image/upload/v1/mournhub/g.jpg" }],
+  });
+  const page = `/memorial/${memorial.slug}`;
+
+  const closed = await request(app).get(page);
+  assert.equal(closed.status, 410);
+  assert.match(closed.text, /time online has ended/);
+  assert.equal((await request(app).get(`${page}/gallery`)).status, 410);
+  assert.equal((await request(app).get(`${page}/photos/${memorial.photos[0]._id}`)).status, 410);
+  const candle = await request(app)
+    .post(`${page}/light-candle`)
+    .set("Content-Type", "application/json")
+    .send("{}");
+  assert.equal(candle.status, 404);
+
+  const dashboard = await agent.get("/dashboard");
+  assert.match(dashboard.text, /Bring back online/);
+  assert.doesNotMatch(dashboard.text, /qr\.png/);
+
+  await postForm(agent, `/memorials/${memorial._id}/extend`, token, { term: "1y" });
+  assert.equal((await request(app).get(page)).status, 200);
+  const days = ((await Memorial.findById(memorial._id)).expiresAt - Date.now()) / 86400000;
+  assert.ok(days > 364 && days < 367);
+});
+
+test("extending early adds the new time after what's left", async () => {
+  const { agent, user, token } = await loggedIn();
+  const memorial = await createMemorial(user, {
+    isPublic: true,
+    term: "1y",
+    expiresAt: new Date(Date.now() + 10 * 86400000),
+  });
+
+  assert.match((await agent.get("/dashboard")).text, /in 10 days/);
+
+  await postForm(agent, `/memorials/${memorial._id}/extend`, token, { term: "1y" });
+  const days = ((await Memorial.findById(memorial._id)).expiresAt - Date.now()) / 86400000;
+  assert.ok(days > 374 && days < 377);
+
+  await postForm(agent, `/memorials/${memorial._id}/extend`, token, { term: "permanent" });
+  assert.equal((await Memorial.findById(memorial._id)).expiresAt, null);
+});
+
+test("memorials published before terms existed stay online", async () => {
+  const user = await createUser();
+  const memorial = await createMemorial(user, { isPublic: true });
+  assert.equal((await request(app).get(`/memorial/${memorial.slug}`)).status, 200);
+});

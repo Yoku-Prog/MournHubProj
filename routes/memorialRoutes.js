@@ -33,6 +33,12 @@ router.post(
   memorialController.togglePublish,
 );
 router.post(
+  "/memorials/:id/extend",
+  requireAuth,
+  verifyCsrf,
+  memorialController.extendTerm,
+);
+router.post(
   "/memorials/:id/delete",
   requireAuth,
   verifyCsrf,

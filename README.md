@@ -39,6 +39,16 @@ Vercel runs the app with no extra configuration (either `app.js` or `server.js` 
 
 Rate limits are kept in memory, so they reset on restart and aren't shared if you run more than one instance.
 
+## Time online
+
+Publishing a memorial for the first time asks how long it stays online: 1 year, 5 years or permanent. The time starts that day, and unpublishing for a while doesn't pause it.
+
+- When the time ends, visitors who scan the code see a page saying the memorial's time online has ended. Nothing is deleted.
+- The dashboard shows each end date, and marks memorials with 30 days or less left.
+- **Extend** adds time after what's left; **Bring back online** restarts an ended memorial from today.
+- Each term chosen is recorded on the memorial (`termPurchases`) for billing.
+- Memorials published before this existed have no end date and are treated as permanent.
+
 ## Admin accounts
 
 - New registrations wait for approval under **Manage admins**.

@@ -2,6 +2,7 @@ const Memorial = require("../models/Memorial");
 const QRCode = require("qrcode");
 const config = require("../config");
 const { renderError } = require("../middleware/errorHandlers");
+const { hasEnded, stillOnline } = require("../utils/terms");
 
 // The landing page's code is real, and opens the sample memorial further down
 // the page. The page still works without it if generation ever fails.
@@ -35,6 +36,18 @@ function renderMemorialNotFound(res) {
   );
 }
 
+// The code on the marker still scans after a memorial's time online is over,
+// so the visitor is told what happened and who can bring it back.
+function renderMemorialEnded(res) {
+  renderError(
+    res,
+    410,
+    "This memorial's time online has ended",
+    "The family, or the funeral home or cemetery that placed this code, can bring it back online.",
+    "/#families",
+  );
+}
+
 exports.viewPublicMemorial = async (req, res) => {
   try {
     const memorial = await Memorial.findOne({
@@ -44,6 +57,9 @@ exports.viewPublicMemorial = async (req, res) => {
 
     if (!memorial) {
       return renderMemorialNotFound(res);
+    }
+    if (hasEnded(memorial)) {
+      return renderMemorialEnded(res);
     }
 
     res.render("memorial-public", {
@@ -71,6 +87,9 @@ exports.viewGallery = async (req, res) => {
     if (!memorial) {
       return renderMemorialNotFound(res);
     }
+    if (hasEnded(memorial)) {
+      return renderMemorialEnded(res);
+    }
 
     res.render("memorial-gallery", { memorial });
   } catch (err) {
@@ -93,6 +112,9 @@ exports.viewPhoto = async (req, res) => {
     });
     const photo = memorial && memorial.photos.id(req.params.photoId);
 
+    if (memorial && hasEnded(memorial)) {
+      return renderMemorialEnded(res);
+    }
     if (!photo) {
       return renderMemorialNotFound(res);
     }
@@ -118,7 +140,7 @@ exports.viewPhoto = async (req, res) => {
 exports.lightCandle = async (req, res) => {
   try {
     const memorial = await Memorial.findOneAndUpdate(
-      { slug: req.params.slug, isPublic: true },
+      { slug: req.params.slug, isPublic: true, ...stillOnline() },
       { $inc: { candleCount: 1 } },
       { returnDocument: "after" },
     );
@@ -154,7 +176,7 @@ exports.addGuestbookEntry = async (req, res) => {
     }
 
     const memorial = await Memorial.findOneAndUpdate(
-      { slug: req.params.slug, isPublic: true },
+      { slug: req.params.slug, isPublic: true, ...stillOnline() },
       {
         $push: {
           guestbookEntries: { name: trimmedName, message: trimmedMessage },

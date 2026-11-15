@@ -363,6 +363,41 @@ button.gilded:hover {
   margin-top: 6px;
 }
 
+.ledger-term {
+  margin-top: 4px;
+  color: var(--inlay-quiet);
+  font-size: 0.95em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-term-alert {
+  color: var(--danger);
+  font-weight: 500;
+}
+
+/* A choice of time beside the button that acts on it */
+.term-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+select {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #7c8b7f;
+  border-radius: var(--radius-control);
+  background: #ffffff;
+  color: var(--inlay-ink);
+  font-family: var(--control-face);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: var(--inlay-ink);
+}
+
 .row-actions {
   display: flex;
   flex-wrap: wrap;

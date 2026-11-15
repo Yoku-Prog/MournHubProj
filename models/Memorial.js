@@ -44,6 +44,26 @@ const memorialSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // How long it stays online: chosen when it's first published. A memorial
+  // with no end date is permanent.
+  term: {
+    type: String,
+    enum: ["1y", "5y", "permanent"],
+  },
+  expiresAt: {
+    type: Date,
+    default: null,
+  },
+  // Every term bought for this memorial, for billing
+  termPurchases: {
+    type: [
+      {
+        term: { type: String, required: true },
+        at: { type: Date, default: Date.now },
+      },
+    ],
+    default: [],
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

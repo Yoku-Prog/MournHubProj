@@ -6,6 +6,7 @@ const multer = require("multer");
 const slugify = require("slugify");
 const cloudinary = require("cloudinary").v2;
 const { formatDateInput } = require("../utils/dates");
+const { TERMS, isTerm, endOfTerm, hasEnded, daysLeft } = require("../utils/terms");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -191,7 +192,9 @@ exports.listMemorials = async (req, res) => {
     const memorials = await Memorial.find({
       createdBy: req.session.userId,
     })
-      .select("fullName slug isPublic photoUrl candleCount guestbookEntries")
+      .select(
+        "fullName slug isPublic photoUrl candleCount guestbookEntries term expiresAt",
+      )
       .sort({ createdAt: -1 });
 
     const baseUrl = config.publicBaseUrl(req);
@@ -199,9 +202,12 @@ exports.listMemorials = async (req, res) => {
     res.render("dashboard", {
       userName: req.session.userName,
       userRole: req.session.userRole,
+      terms: TERMS,
       memorials: memorials.map((memorial) => ({
         ...memorial.toObject(),
         publicUrl: `${baseUrl}/memorial/${memorial.slug}`,
+        isEnded: hasEnded(memorial),
+        daysLeft: daysLeft(memorial),
       })),
     });
   } catch (err) {
@@ -364,7 +370,55 @@ exports.togglePublish = async (req, res) => {
       return res.redirect("/dashboard");
     }
 
-    memorial.isPublic = !memorial.isPublic;
+    // A memorial whose time has ended comes back through extendTerm instead
+    if (hasEnded(memorial)) {
+      return res.redirect("/dashboard");
+    }
+
+    if (memorial.isPublic) {
+      // Taking it down for a while doesn't stop or reset its time online
+      memorial.isPublic = false;
+    } else if (memorial.term) {
+      memorial.isPublic = true;
+    } else {
+      // First publication: the time online is chosen now and starts now
+      const { term } = req.body;
+      if (!isTerm(term)) {
+        return res.redirect("/dashboard");
+      }
+      memorial.term = term;
+      memorial.expiresAt = endOfTerm(term, new Date());
+      memorial.termPurchases.push({ term });
+      memorial.isPublic = true;
+    }
+
+    await memorial.save();
+    res.redirect("/dashboard");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/dashboard");
+  }
+};
+
+// Adds time to a memorial that has an end date, or brings back one that ended.
+// New time is added after what's left, so extending early loses nothing.
+exports.extendTerm = async (req, res) => {
+  try {
+    const memorial = await findOwnedMemorial(req);
+    const { term } = req.body;
+    if (!memorial || !memorial.expiresAt || !isTerm(term)) {
+      return res.redirect("/dashboard");
+    }
+
+    const now = new Date();
+    const ended = hasEnded(memorial, now);
+    memorial.expiresAt = endOfTerm(term, ended ? now : memorial.expiresAt);
+    memorial.term = term;
+    memorial.termPurchases.push({ term });
+    if (ended) {
+      memorial.isPublic = true;
+    }
+
     await memorial.save();
     res.redirect("/dashboard");
   } catch (err) {

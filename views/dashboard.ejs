@@ -43,24 +43,56 @@
                   <% } %>
                   <div>
                     <h2 class="panel-heading"><%= memorial.fullName %></h2>
-                    <span class="status <%= memorial.isPublic ? 'status-public' : '' %>">
-                      <%= memorial.isPublic ? 'Public' : 'Private draft' %>
+                    <span class="status <%= memorial.isPublic && !memorial.isEnded ? 'status-public' : '' %>">
+                      <%= memorial.isEnded ? 'Ended' : memorial.isPublic ? 'Public' : 'Private draft' %>
                     </span>
                     <p class="ledger-stats">
                       <%= memorial.candleCount || 0 %> candle<%= memorial.candleCount === 1 ? '' : 's' %>
                       &middot;
                       <%= memorial.guestbookEntries.length %> message<%= memorial.guestbookEntries.length === 1 ? '' : 's' %>
                     </p>
+                    <% if (memorial.isEnded) { %>
+                      <p class="ledger-term ledger-term-alert">Its time online ended on <%= formatDate(memorial.expiresAt) %>. Visitors who scan the code are told it has ended.</p>
+                    <% } else if (memorial.expiresAt) { %>
+                      <p class="ledger-term <%= memorial.daysLeft <= 30 ? 'ledger-term-alert' : '' %>">
+                        Time online ends <%= formatDate(memorial.expiresAt) %><% if (memorial.daysLeft <= 30) { %>, in <%= memorial.daysLeft %> day<%= memorial.daysLeft === 1 ? '' : 's' %><% } %>
+                      </p>
+                    <% } else if (memorial.term || memorial.isPublic) { %>
+                      <p class="ledger-term">Permanent</p>
+                    <% } %>
                   </div>
                 </div>
 
                 <div class="row-actions">
                   <a href="/memorials/<%= memorial._id %>/edit" class="btn btn-secondary">Edit</a>
 
-                  <form action="/memorials/<%= memorial._id %>/toggle-publish" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
-                    <button type="submit" class="btn-secondary"><%= memorial.isPublic ? 'Unpublish' : 'Publish' %></button>
-                  </form>
+                  <% if (!memorial.isEnded) { %>
+                    <form action="/memorials/<%= memorial._id %>/toggle-publish" method="POST" class="term-form">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                      <% if (!memorial.isPublic && !memorial.term) { %>
+                        <select name="term" aria-label="How long the memorial stays online" required>
+                          <option value="">Stays online for…</option>
+                          <% Object.entries(terms).forEach(([value, term]) => { %>
+                            <option value="<%= value %>"><%= term.label %></option>
+                          <% }) %>
+                        </select>
+                      <% } %>
+                      <button type="submit" class="btn-secondary"><%= memorial.isPublic ? 'Unpublish' : 'Publish' %></button>
+                    </form>
+                  <% } %>
+
+                  <% if (memorial.expiresAt) { %>
+                    <form action="/memorials/<%= memorial._id %>/extend" method="POST" class="term-form" data-confirm="<%= memorial.isEnded ? 'Bring this memorial back online for the time chosen?' : 'Add the time chosen to this memorial?' %>">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                      <select name="term" aria-label="<%= memorial.isEnded ? 'How long to bring it back for' : 'How much time to add' %>" required>
+                        <option value=""><%= memorial.isEnded ? 'Bring back for…' : 'Add time…' %></option>
+                        <% Object.entries(terms).forEach(([value, term]) => { %>
+                          <option value="<%= value %>"><%= term.label %></option>
+                        <% }) %>
+                      </select>
+                      <button type="submit" class="btn-secondary"><%= memorial.isEnded ? 'Bring back online' : 'Extend' %></button>
+                    </form>
+                  <% } %>
 
                   <form action="/memorials/<%= memorial._id %>/delete" method="POST" data-confirm="Delete this memorial and all of its photos permanently?">
                     <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
@@ -69,7 +101,7 @@
                 </div>
               </div>
 
-              <% if (memorial.isPublic) { %>
+              <% if (memorial.isPublic && !memorial.isEnded) { %>
                 <div class="qr-section">
                   <img src="/memorials/<%= memorial._id %>/qr.png" alt="QR code for <%= memorial.fullName %>'s memorial" width="150" height="150" loading="lazy">
                   <div class="qr-details">
